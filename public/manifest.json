@@ -1,0 +1,17 @@
+{
+  "name": "Tab Collage Organiser",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "Tab Collage Organiser",
+  "browser_action": {},
+  "content_security_policy": "script-src 'self' 'sha256-x7jNxFJ1cJv22HSRIeLLcnV0oYmE7Yk9IVc3wR6LeJ8='; object-src 'self'",
+  "background": {
+    "scripts": [
+      "app/background.js"
+    ]
+  },
+  "permissions": [
+    "tabs",
+    "<all_urls>"
+  ]
+}

@@ -1,0 +1,8 @@
+.domain {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
