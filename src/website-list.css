@@ -1,30 +1,67 @@
 .website-list {
-    overflow-y: hidden;
-    height: 100%;
+	overflow-y: hidden;
+	height: 100%;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .site-img-list {
-    margin: 2em;
-    margin: 20% 0;
-    display: flex;
-    flex-flow: column;
-    align-items: flex-start;
+	margin: 30% 3em 50% 2%;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+}
+
+.img-item {
+	margin-bottom: 2em;
+	border: 3px solid transparent;
+	/* filter: brightness(50%); */
+	transition: all 0.3s;
+}
+
+.img-placeholder {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: rgba(255, 255, 255, 0.514);
+	padding: 5px;
+}
+
+.img-item-focused {
+	border-radius: 3px;
+	border: 3px solid #000000;
+	/* border: 3px solid #2196f3dd; */
+	box-shadow: 0 0 0 1px white;
 }
 
 .float-site-list {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    overflow-y: scroll;
-    padding: 2em;
-    box-sizing: border-box;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 100%;
+	height: 100%;
+	overflow-y: scroll;
+	padding: 2em;
+	display: flex;
+	justify-content: flex-end;
+	box-sizing: border-box;
 }
 
 .site-list {
-    /* padding: 40% 0; */
-    direction: rtl;
+	direction: rtl;
+	width: 100%;
+	height: fit-content;
+	position: relative;
+}
+
+.site-list-scroll-plane {
+	top: 0px;
+	left: 0px;
+	position: absolute;
+	width: 70%;
+	height: 100%;
+	z-index: 1;
+	border: 1px solid red;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -40,16 +77,30 @@
 }
 
 .site-item {
-    color: white;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    padding: 5px;
-    background-color: #13131377;
-    width: fit-content;
-    display: flex;
-    align-items: center;
+	color: white;
+	margin-bottom: 5px;
+	border-radius: 5px;
+	padding: 5px 3px 5px 5px;
+	background-color: #13131377;
+	width: fit-content;
+	display: flex;
+	align-items: center;
+	outline-color: #2196f3dd;
+	pointer-events: all;
 }
 
 .list-icon {
-    padding-left: 5px;
+	padding-left: 5px;
+}
+
+.close-item-btn {
+  display: flex;
+  border-radius: 10px;
+  font-size: 20px;
+	margin-left: 3px;
+}
+
+.close-item-btn:hover {
+  /* background-color: rgba(131, 131, 131, 0.5); */
+  background-color: rgba(192, 31, 31, 0.801);
 }

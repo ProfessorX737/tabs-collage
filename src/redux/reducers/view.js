@@ -1,8 +1,10 @@
 import update from "immutability-helper";
+import * as constants from '../../constants';
 import { v1 as uuidv1 } from "uuid";
 import {
   getUpdateAtPathOb,
-  removeListItemAtPath
+  removeListItemAtPath,
+  getFirstLeafNodePath
 } from "../../tree-utils"
 import * as types from "../actionTypes"
 
@@ -10,14 +12,16 @@ const initialState = {
   viewTree: {
     id: "1",
     currTabId: "all",
-    tabs: [{ id: "all" }],
-    tabsView: {},
-    children: []
+    tabs: [{ id: "all", content: "all" }],
+    children: [],
+    viewMode: constants.VIEW_MODE.list
   },
   domains: {},
   domainIconUrl: {},
   urlTabMap: {},
-  urlImgs: {}
+  urlImgs: {},
+  websites: {},
+  chromeTabMap: {},
 }
 
 export default function (state = initialState, action) {
@@ -130,7 +134,7 @@ export default function (state = initialState, action) {
     case types.ADD_TAB: {
       const {
         viewPath,
-        tabId
+        tab
       } = action.payload;
       const updateOp = {
         viewTree: getUpdateAtPathOb({
@@ -138,10 +142,10 @@ export default function (state = initialState, action) {
           path: viewPath,
           update: {
             tabs: {
-              $push: [{ id: tabId }]
+              $push: [tab]
             },
             currTabId: {
-              $set: tabId
+              $set: tab.id
             }
           }
         })
@@ -286,17 +290,43 @@ export default function (state = initialState, action) {
     }
     case types.DELETE_VIEW: {
       const {
+        view,
         viewPath
       } = action.payload;
+      const tabs = view.tabs;
+      // remove the view
       let newViewTree = removeListItemAtPath({
         treeData: state.viewTree,
         path: viewPath
       })
+      // simplify the view
       newViewTree = simplifyView(newViewTree);
-      return {
-        ...state,
-        viewTree: newViewTree
-      };
+      // push all tabs in the removed view to the first view
+      const firstView = getFirstLeafView(newViewTree);
+      const firstViewPath = getFirstLeafNodePath({ view: newViewTree });
+      let ids = new Set();
+      let newTabs = [];
+      firstView.tabs.forEach(tab => {
+        ids.add(tab.id);
+      })
+      view.tabs.forEach(tab => {
+        if(!ids.has(tab.id)) newTabs.push(tab);
+      })
+      newViewTree = update(newViewTree, getUpdateAtPathOb({
+          treeData: newViewTree,
+          path: firstViewPath,
+          update: {
+            tabs: {
+              $push: newTabs
+            }
+          }
+        })
+      )
+      return update(state, {
+        viewTree: {
+          $set: newViewTree
+        }
+      })
     }
     case types.INSERT_CHILD_CELLS_TOGGLE_EXPAND: {
       const {
@@ -398,35 +428,46 @@ export default function (state = initialState, action) {
     }
     case types.REFRESH_VIEW: {
       const {
-        tabs
+        tabs,
+        urlImgs
       } = action.payload;
       let domains = {};
       let domainIconUrl = {};
       let urlTabMap = {};
+      let chromeTabMap = {};
       for (let i = 0; i < tabs.length; i++) {
+        chromeTabMap[tabs[i].id] = tabs[i];
         const domain = getDomainFromUrl(tabs[i].url);
         const url = tabs[i].url;
         urlTabMap[url] = tabs[i];
         if (domains[domain]) {
-          domains[domain].push(url);
+          domains[domain].push(tabs[i]);
         } else {
-          domains[domain] = [url];
+          domains[domain] = [tabs[i]];
         }
         domainIconUrl[domain] = tabs[i].favIconUrl;
       }
-      const domainSet = new Set(Object.keys(domains));
+      let domainSet = new Set(Object.keys(domains));
       let viewTreeCopy = JSON.parse(JSON.stringify(state.viewTree));
       cleanView(viewTreeCopy, domains, domainSet);
       let firstView = getFirstLeafView(viewTreeCopy);
       domainSet.forEach(domain => {
-        firstView.tabs.push({ id: domain, icon: domainIconUrl[domain] });
+        const id = uuidv1();
+        firstView.tabs.push({
+          id,
+          content: domain,
+          icon: domainIconUrl[domain]
+        });
       })
       return {
         ...state,
         viewTree: viewTreeCopy,
         domains,
         domainIconUrl,
-        urlTabMap
+        urlTabMap,
+        urlImgs,
+        websites: tabs,
+        chromeTabMap,
       }
     }
     case types.SET_VIEW_TREE: {
@@ -451,6 +492,70 @@ export default function (state = initialState, action) {
       }
       return update(state, updateOb);
     }
+    case types.SET_TAB_EDIT: {
+      const {
+        viewPath,
+        isEditing,
+        tabIndex
+      } = action.payload;
+      const updateOb = {
+        viewTree: getUpdateAtPathOb({
+          treeData: state.viewTree,
+          path: viewPath,
+          update: {
+            tabs: {
+              [tabIndex] : {
+                $merge: {
+                  isEditing
+                }
+              }
+            }
+          }
+        })
+      }
+      return update(state, updateOb);
+    }
+    case types.SET_TAB_CONTENT: {
+      const {
+        content,
+        viewPath,
+        tabIndex
+      } = action.payload;
+      const updateOb = {
+        viewTree: getUpdateAtPathOb({
+          treeData: state.viewTree,
+          path: viewPath,
+          update: {
+            tabs: {
+              [tabIndex] : {
+                $merge: {
+                  content
+                }
+              }
+            }
+          }
+        })
+      }
+      return update(state, updateOb);
+    }
+    case types.SET_VIEW_MODE: {
+      const {
+        viewPath,
+        viewMode
+      } = action.payload;
+      const updateOb = {
+        viewTree: getUpdateAtPathOb({
+          treeData: state.viewTree,
+          path: viewPath,
+          update: {
+            viewMode: {
+              $set: viewMode
+            }
+          }
+        })
+      }
+      update(state, updateOb);
+    }
     default: {
       return state;
     }
@@ -458,18 +563,19 @@ export default function (state = initialState, action) {
 }
 
 const cleanView = (view, domains, domainSet) => {
-  const newViewTabs = [];
+  let newViewTabs = [];
   for (let i = 0; i < view.tabs.length; i++) {
-    const domainId = view.tabs[i].id;
+    const name = view.tabs[i].content;
+    const tab = view.tabs[i];
     // only add to newViewTabs if this domain still exists
-    if (domainId === "all" || domains[domainId]) {
+    if (name === "all" || domains[name] || tab.regex) {
       // remove this domain from domainSet so at the end we can
       // find out which domains are new and add them to a view
-      domainSet.delete(domainId);
-      newViewTabs.push({ id: domainId });
+      domainSet.delete(name);
+      newViewTabs.push(view.tabs[i]);
     }
-    view.tabs = newViewTabs;
   }
+  view.tabs = newViewTabs;
   for (let i = 0; i < view.children.length; i++) {
     cleanView(view.children[i], domains, domainSet);
   }
@@ -485,7 +591,7 @@ const getFirstLeafView = view => {
 }
 
 const getDomainFromUrl = url => {
-  return url.match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/)[1];
+  return url.match(/^(?:https?:\/\/)?(?:[^@/\n]+@)?(?:www\.)?([^:/?\n]+)/)[1];
 }
 
 const mutateDeleteTabId = (view, id) => {

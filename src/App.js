@@ -1,7 +1,6 @@
 /*global chrome*/
 import React from "react";
-import "./styles.css";
-import ViewPort from "./view-port";
+import "./App.css";
 import DomainViewer from "./domain-viewer";
 import assert from "assert";
 import { connect } from "react-redux";
@@ -19,29 +18,29 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    document.addEventListener("visibilitychange", this.onFocus);
     this.onFocus();
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("visibilitychange", this.onFocus);
+    window.addEventListener("blur", () => { 
+      if(this.blurFilter) this.blurFilter.style.display = 'block';
+    })
+    window.addEventListener("focus", () => { 
+      if(this.blurFilter) this.blurFilter.style.display = 'none';
+    })
   }
 
   onFocus = () => {
-    if(document.visibilityState === 'visible') {
+    console.log(document.visibilityState)
+    if (document.visibilityState === 'visible') {
       // chrome.tabs.query({ status: 'complete' }, tabs => {
       //   console.log(JSON.stringify(tabs));
       //   this.props.refreshView({ tabs });
       // })
-			// chrome.runtime.sendMessage('', urlImgs => {
+      // chrome.runtime.sendMessage('', urlImgs => {
       //   console.log(urlImgs)
       //   if(urlImgs) {
       //     this.props.setUrlImgs({ urlImgs });
       //   }
       // })
-      console.log(sampleData2)
-      this.props.refreshView({ tabs: sampleData2 })
-      this.props.setUrlImgs({ urlImgs: sampleImgs });
+      this.props.refreshView({ tabs: sampleData2, urlImgs: sampleImgs });
     }
   }
 
@@ -59,12 +58,16 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App" style={{ overflow: "hidden" }}>
-        <ViewPort>
+      <div className="App">
+        <div className="viewport">
           <DomainViewer
             view={this.props.viewTree}
           />
-        </ViewPort>
+        </div>
+        <div 
+        ref={el => {this.blurFilter = el}}
+        className="blur-filter"
+        />
       </div>
     );
   }
@@ -77,7 +80,7 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { 
+  {
     refreshView,
     setUrlImgs
   }

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import {
   splitView
 } from "./redux/actions"
-import DomainTabs from "./domain-tabs";
+import SortableTabs from "./sortable-tabs";
 import "./domain-viewer.css";
 import Domain from './domain';
 
@@ -27,12 +27,8 @@ class _DomainViewer extends React.PureComponent {
             />
           ))
         ) : (
-            // <div
-            //   key={this.props.view.id}
-            //   className="domain-viewer"
-            // >
             <React.Fragment>
-              <DomainTabs
+              <SortableTabs
                 view={this.props.view}
                 viewPath={this.props.viewPath}
               />
@@ -42,7 +38,6 @@ class _DomainViewer extends React.PureComponent {
               />
 
             </React.Fragment>
-            // </div>
           )}
       </div>
     );

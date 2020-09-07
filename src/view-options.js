@@ -34,16 +34,15 @@ class ViewOptions extends React.Component {
     super(props);
     this.state = {
       menuAnchor: null,
-      deleteMode: false
     }
   }
 
   handleMoreBtnClick = evt => {
-    this.setState({menuAnchor: evt.currentTarget.parentNode});
+    this.setState({ menuAnchor: evt.currentTarget.parentNode });
   }
 
   onMenuClose = () => {
-    this.setState({menuAnchor: null});
+    this.setState({ menuAnchor: null });
   }
 
   onSplitView = direction => {
@@ -58,6 +57,7 @@ class ViewOptions extends React.Component {
   onDeleteView = () => {
     this.onMenuClose();
     this.props.deleteView({
+      view: this.props.view,
       viewPath: this.props.viewPath
     })
   }
@@ -66,10 +66,10 @@ class ViewOptions extends React.Component {
     return (
       <React.Fragment>
         <div className="more-btn"
-          onClick={evt => {this.handleMoreBtnClick(evt)}}
+          onClick={evt => { this.handleMoreBtnClick(evt) }}
         >
           <MoreVert fontSize="small" />
-        </div> 
+        </div>
         <Hmenu
           anchorEl={this.state.menuAnchor}
           anchorOrigin={{
@@ -84,24 +84,11 @@ class ViewOptions extends React.Component {
           getContentAnchorEl={null}
           open={Boolean(this.state.menuAnchor)}
         >
-          <MenuItem>
-            <VerticalSplit
-              onClick={() => {this.onSplitView("row")}}
-            />
+          <MenuItem onClick={() => { this.onSplitView("row") }} >
+            <VerticalSplit />
           </MenuItem>
-          <MenuItem>
-            <HorizontalSplit
-              onClick={() => {this.onSplitView("column")}}
-            />
-          </MenuItem>
-          <MenuItem>
-              <Delete
-                style={{color: this.state.deleteMode ? "red" : "black"}}
-                onClick={() => {
-                  this.onMenuClose();
-                  this.setState({ deleteMode: !this.state.deleteMode });
-                }}
-              />
+          <MenuItem onClick={() => { this.onSplitView("column") }}>
+            <HorizontalSplit />
           </MenuItem>
           {this.props.viewPath.length > 0 && (
             <MenuItem
@@ -123,7 +110,7 @@ ViewOptions.propTypes = {
 
 export default connect(
   state => ({ cells: state.cells }),
-  { 
+  {
     splitView,
     deleteView
   }

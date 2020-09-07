@@ -70,7 +70,7 @@ export function toggleCellEdit({
 
 export function addTab({
   viewPath,
-  tabId
+  tab
 }) {
   return ({
     type: types.ADD_TAB,
@@ -257,7 +257,8 @@ export function moveChildCell({
 }
 
 export function refreshView({
-  tabs
+  tabs,
+  urlImgs
 }) {
   return ({
     type: types.REFRESH_VIEW,
@@ -279,6 +280,38 @@ export function setUrlImgs({
 }) {
   return ({
     type: types.SET_URL_IMGS,
+    payload: arguments[0]
+  })
+}
+
+export function setTabEdit({
+  viewPath,
+  isEditing,
+  tabIndex
+}) {
+  return ({
+    type: types.SET_TAB_EDIT,
+    payload: arguments[0]
+  })
+}
+
+export function setTabContent({
+  viewPath,
+  content,
+  tabIndex
+}) {
+  return ({
+    type: types.SET_TAB_CONTENT,
+    payload: arguments[0]
+  })
+}
+
+export function setViewMode({
+  viewPath,
+  viewMode
+}) {
+  return ({
+    type: types.SET_VIEW_MODE,
     payload: arguments[0]
   })
 }

@@ -33,32 +33,64 @@ class Domain extends React.Component {
 
 	setWebsites = () => {
 		// get filtered websites based on domain
-		const domain = this.props.view.currTabId;
+		const currTabId = this.props.view.currTabId;
 		const tabs = this.props.view.tabs;
-		// special case for domain = all
-		let urls = [];
-		if (domain === 'all') {
-			for (let i = 0; i < tabs.length; i++) {
-				const tabId = tabs[i].id;
-				if (this.props.domains[tabId]) {
-					urls.push(...this.props.domains[tabId]);
-				}
-			}
-		} else {
-			// get websites with domain = domain
-			urls = this.props.domains[domain] || [];
+		let currTabIndex = 0;
+		for (; currTabIndex < tabs.length; currTabIndex++) {
+			if (tabs[currTabIndex].id === currTabId) break;
 		}
-		urls.sort();
-		const websites = urls.map(url => {
-			return this.props.urlTabMap[url];
-		})
+		const currTab = tabs[currTabIndex];
+		if (!currTab) return;
+
+		let websites = [];
+		const name = currTab.content;
+		if(name === "all" && !currTab.regex) {
+			// get all tabs in this view
+			let websiteSet = new Set();
+			for(let i = 0; i < tabs.length; i++) {
+				this.getWebsites(tabs[i]).forEach(site => {
+					websiteSet.add(site);
+				})
+			}
+			websites = Array.from(websiteSet);
+		} else {
+			websites = this.getWebsites(currTab);
+		}
+		websites.sort(this.siteCompare);
 		this.setState({ websites });
+	}
+
+	siteCompare = ( a, b) => {
+		return a.url < b.url ? -1 : a.url > b.url ? 1 : 0;
+	}
+
+	getWebsites = tab => {
+		let websites = [];
+		if(tab.regex) {
+			websites = this.grepTabs(tab.content);
+		} else {
+			websites = this.props.domains[tab.content] || [];
+		}
+		return websites;
+	}
+
+	grepTabs = regex => {
+		const reg = RegExp(regex, 'i');
+		const sites = Object.values(this.props.chromeTabMap);
+		let websites = [];
+		for (let i = 0; i < sites.length; i++) {
+			const site = sites[i];
+			if (site.title.match(reg) || site.url.match(reg)) {
+				websites.push(site);
+			}
+		}
+		return websites;
 	}
 
 	render() {
 		return (
 			<div className="domain">
-				<WebsiteList websites={this.state.websites}/>
+				<WebsiteList websites={this.state.websites} />
 			</div>
 		)
 	}
@@ -72,8 +104,8 @@ Domain.propTypes = {
 export default connect(
 	state => ({
 		domains: state.view.domains,
-		urlTabMap: state.view.urlTabMap,
-		urlImgs: state.view.urlImgs
+		urlImgs: state.view.urlImgs,
+		chromeTabMap: state.view.chromeTabMap
 	}),
 	null
 )(Domain)

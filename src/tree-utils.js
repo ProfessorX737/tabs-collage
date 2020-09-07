@@ -73,6 +73,23 @@ export function changeNodeAtPath({ treeData, path, newNode }) {
   return update(treeData, obj);
 }
 
+export function getRemoveListItemAtPathOb({ treeData, path}) {
+  const _path = [...path];
+  const lastIndex = _path.pop();
+  let { obj, lastObj } = unflatten(_path);
+  lastObj["$splice"] = [[lastIndex, 1]];
+  return obj;
+}
+
+export function getFirstLeafNodePath({ view , path = [] }) {
+  if(view.children.length === 0) {
+    return path;
+  }
+  path.push('children')
+  path.push(0);
+  return getFirstLeafNodePath({ view: view.children[0] , path });
+}
+
 /**
  * Remove the node at the path specified
  * @param {Object} params

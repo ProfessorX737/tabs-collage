@@ -26,3 +26,6 @@ export const MOVE_CHILD_CELL = "MOVE_CHILD_CELL";
 export const REFRESH_VIEW = "REFRESH_VIEW";
 export const SET_VIEW_TREE = "SET_VIEW_TREE";
 export const SET_URL_IMGS = "SET_URL_IMGS";
+export const SET_TAB_EDIT = "SET_TAB_EDIT";
+export const SET_TAB_CONTENT = "SET_TAB_CONTENT";
+export const SET_VIEW_MODE = "SET_VIEW_MODE";
