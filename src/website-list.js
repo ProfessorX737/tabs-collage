@@ -2,10 +2,10 @@ import React from 'react';
 import './website-list.css';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import assert from 'assert'
 import ReactResizeDetector from 'react-resize-detector';
 import clsx from 'clsx';
 import CloseRounded from "@material-ui/icons/CloseRounded";
+import * as chrome from './chrome-api';
 
 class WebsiteList extends React.Component {
 	constructor(props) {
@@ -107,6 +107,7 @@ class WebsiteList extends React.Component {
 
 	onItemClose = (evt, site) => {
 		evt.stopPropagation();
+		chrome.removeTabs([site.id]);
 	}
 
 	calcImgSize = () => {
@@ -126,12 +127,13 @@ class WebsiteList extends React.Component {
 	onListBackgroundClick = evt => {
 		const currEl = document.activeElement;
 		if (currEl && currEl.getAttribute('class') === 'site-item') {
-			console.log('click')
+			chrome.setTabActive(currEl.id);
 		}
 	}
 
 	onWebsiteClick = (evt, site) => {
 		evt.stopPropagation();
+		chrome.setTabActive(site.id);
 	}
 
 	render() {
@@ -145,7 +147,7 @@ class WebsiteList extends React.Component {
 					className="site-img-list"
 				>
 					{this.props.websites.map((site, index) => {
-						const img = this.props.urlImgs[site.url];
+						const img = this.props.tabImgs[site.id];
 						return (
 							<div
 								key={site.id}
@@ -222,7 +224,7 @@ WebsiteList.propTypes = {
 
 export default connect(
 	state => ({
-		urlImgs: state.view.urlImgs
+		tabImgs: state.view.tabImgs
 	}),
 	null
 )(WebsiteList);

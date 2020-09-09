@@ -10,11 +10,10 @@ import {
 import clsx from 'clsx';
 import {
 	Close,
-	Cancel,
 	HighlightOff
 } from "@material-ui/icons";
 import './tab.css';
-import TextField from '@material-ui/core/TextField';
+import * as chrome from './chrome-api';
 
 class Tab extends React.Component {
 	constructor(props) {
@@ -33,6 +32,11 @@ class Tab extends React.Component {
 			})
 		}
 		this.tabRef.scrollIntoView();
+	}
+
+	onCloseAllTab = evt => {
+		evt.stopPropagation();
+		// chrome.removeTabs(ids);
 	}
 
 	onCloseTab = evt => {
@@ -108,27 +112,24 @@ class Tab extends React.Component {
 				>
 					{isEditing ?
 						<div
-							className="tab-input"
+							className="tab-input-wrapper"
 							onKeyDown={this.onTabInputKeyDown}
 						>
-							<TextField
-								autoFocus
-								size="small"
-								label="search/regex"
-								margin="dense"
-								variant="filled"
+							<input
+								className='tab-input'
+								type="text"
 								value={this.props.tab.content}
+								placeholder="search/regex"
 								onChange={this.onTabInputChange}
 								style={{
-									width: `${tab.content.length}ch`,
-									minWidth: '100%'
+									width: `${tab.content.length}ch`
 								}}
 							/>
 						</div>
 						:
 						<div className="tab-content">
 							{tab.icon &&
-								<img src={tab.icon} width="25" height="25" style={{ marginRight: '5px' }} />
+								<img src={tab.icon} width="25" height="auto" style={{ marginRight: '5px' }} />
 							}
 							{tab.content}
 						</div>
@@ -138,7 +139,7 @@ class Tab extends React.Component {
 					<div className="tab-options">
 						<div
 							className="close-all-tab-btn"
-							onClick={this.onCloseTab}
+							onClick={this.onCloseAllTab}
 						>
 							<HighlightOff
 								style={{

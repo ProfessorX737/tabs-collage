@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { withResizeDetector } from 'react-resize-detector';
 import clsx from 'clsx';
 import CloseRounded from "@material-ui/icons/CloseRounded";
+import * as chrome from './chrome-api';
 
 let imgRef = null;
 
@@ -33,7 +34,7 @@ class WebsiteGrid extends React.Component {
 
   filterSitesOnImg = () => {
     const websites = this.props.websites.filter(site => {
-      return Boolean(this.props.urlImgs[site.url]);
+      return Boolean(this.props.tabImgs[site.id]);
     })
     let notAll = false;
     if (websites.length < this.props.websites.length) notAll = true;
@@ -66,10 +67,6 @@ class WebsiteGrid extends React.Component {
     return cols;
   }
 
-  onItemClose = () => {
-    console.log('close grid item')
-  }
-
   render() {
     return (
       <div className="grid-wrapper">
@@ -85,12 +82,13 @@ class WebsiteGrid extends React.Component {
           }}
         >
           {this.state.websites.map((site, index) => {
-            const img = this.props.urlImgs[site.url];
+            const img = this.props.tabImgs[site.id];
             return (
               <div
                 key={site.id}
                 className="grid-item"
                 ref={el => { this.imgRefs[site.id] = el }}
+                onClick={() => {chrome.setTabActive(site.id)}}
               >
                 <img
                   src={img}
@@ -108,7 +106,7 @@ class WebsiteGrid extends React.Component {
                 </div>
                 <div
                   className="grid-item-close-btn"
-                  onClick={this.onItemClose}
+                  onClick={() => {chrome.removeTabs([site.id])}}
                 >
                   <CloseRounded />
                 </div>
@@ -129,7 +127,7 @@ const ResizedWebsiteGrid = withResizeDetector(WebsiteGrid);
 
 export default connect(
   state => ({
-    urlImgs: state.view.urlImgs
+    tabImgs: state.view.tabImgs
   }),
   null
 )(ResizedWebsiteGrid);

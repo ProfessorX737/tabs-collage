@@ -258,7 +258,7 @@ export function moveChildCell({
 
 export function refreshView({
   tabs,
-  urlImgs
+  tabImgs
 }) {
   return ({
     type: types.REFRESH_VIEW,
@@ -275,11 +275,11 @@ export function setViewTree({
   })
 }
 
-export function setUrlImgs({
-  urlImgs
+export function setTabImgs({
+  tabImgs
 }) {
   return ({
-    type: types.SET_URL_IMGS,
+    type: types.SET_TAB_IMGS,
     payload: arguments[0]
   })
 }

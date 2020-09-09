@@ -19,7 +19,7 @@ const initialState = {
   domains: {},
   domainIconUrl: {},
   urlTabMap: {},
-  urlImgs: {},
+  tabImgs: {},
   websites: {},
   chromeTabMap: {},
 }
@@ -428,7 +428,7 @@ export default function (state = initialState, action) {
     case types.REFRESH_VIEW: {
       const {
         tabs,
-        urlImgs
+        tabImgs
       } = action.payload;
       let domains = {};
       let domainIconUrl = {};
@@ -464,7 +464,7 @@ export default function (state = initialState, action) {
         domains,
         domainIconUrl,
         urlTabMap,
-        urlImgs,
+        tabImgs,
         websites: tabs,
         chromeTabMap,
       }
@@ -480,13 +480,13 @@ export default function (state = initialState, action) {
       }
       return update(state, updateOb);
     }
-    case types.SET_URL_IMGS: {
+    case types.SET_TAB_IMGS: {
       const {
-        urlImgs
+        tabImgs
       } = action.payload;
       const updateOb = {
-        urlImgs: {
-          $set: urlImgs
+        tabImgs: {
+          $set: tabImgs
         }
       }
       return update(state, updateOb);
