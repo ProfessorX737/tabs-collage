@@ -26,6 +26,7 @@ const refreshViewLogic = store => next => async action => {
   if (action.type === types.REFRESH_VIEW) {
     const lsKey = constants.LOCAL_STORAGE_KEY;
     const viewTreeJson = await localStorage.getItem(lsKey);
+    console.log('trying to restore view ')
     if (viewTreeJson) {
       console.log('restoring view')
       // set viewTree with oldView

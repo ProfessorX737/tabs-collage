@@ -41,16 +41,19 @@ class WebsiteList extends React.Component {
 
 	onFocus = (evt, url) => {
 		this.setState({ currSite: url });
-		setTimeout(() => {
-			const imgEl = this.imgRefs[url];
-			if (imgEl) {
-				this.imgRefs[url].scrollIntoView({
-					// behavior: "smooth",
-					block: "center"
-				})
-			}
+		const currEl = document.activeElement;
+		if (currEl.getAttribute('class') === 'site-item') {
+			setTimeout(() => {
+				const imgEl = this.imgRefs[url];
+				if (imgEl) {
+					this.imgRefs[url].scrollIntoView({
+						// behavior: "smooth",
+						block: "center"
+					})
+				}
 
-		})
+			})
+		}
 	}
 
 	onKeyDown = evt => {
@@ -102,14 +105,8 @@ class WebsiteList extends React.Component {
 		}
 	}
 
-	onSiteItemWheel = evt => {
-		evt.stopPropagation();
-
-	}
-
 	onItemClose = (evt, site) => {
 		evt.stopPropagation();
-		console.log(site);
 	}
 
 	calcImgSize = () => {
@@ -126,8 +123,15 @@ class WebsiteList extends React.Component {
 		return {};
 	}
 
+	onListBackgroundClick = evt => {
+		const currEl = document.activeElement;
+		if (currEl && currEl.getAttribute('class') === 'site-item') {
+			console.log('click')
+		}
+	}
+
 	onWebsiteClick = (evt, site) => {
-		console.log(site.id);
+		evt.stopPropagation();
 	}
 
 	render() {
@@ -149,7 +153,7 @@ class WebsiteList extends React.Component {
 								ref={el => { this.imgRefs[site.id] = el }}
 							>
 								{img ?
-									<img key={site.id} src={img} style={this.calcImgSize()} />
+									<img key={site.id} src={img} style={{ ...this.calcImgSize() }} />
 									:
 									<div className="img-placeholder">
 										{site.title} (image not available)
@@ -167,25 +171,25 @@ class WebsiteList extends React.Component {
 					<div
 						ref={el => { this.siteList = el }}
 						className="site-list"
+						onClick={this.onListBackgroundClick}
 					>
 						{this.props.websites.map((site, index) => {
 							return (
 								<div
 									key={site.id}
 									ref={el => { this.myrefs[site.id] = el }}
-									url={site.url}
+									siteid={site.id}
 									tabIndex={-1}
 									className="site-item"
 									onFocus={evt => { this.onFocus(evt, site.id) }}
 									onKeyDown={this.onKeyDown}
 									onMouseEnter={evt => { evt.target.focus() }}
-									onWheel={this.onSiteItemWheel}
 									onClick={evt => this.onWebsiteClick(evt, site)}
 								>
 									<div className="close-item-btn"
 										onClick={evt => this.onItemClose(evt, site)}
 									>
-										<CloseRounded style={{ fontSize: "20px" }} />
+										<CloseRounded fontSize="small"/>
 									</div>
 									{
 										site.favIconUrl &&

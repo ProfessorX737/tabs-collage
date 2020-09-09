@@ -5,6 +5,9 @@ import { connect } from 'react-redux';
 import assert from 'assert'
 import './domain.css'
 import WebsiteList from './website-list';
+import WebsiteGrid from './website-grid';
+import ViewMode from './view-mode';
+import { VIEW_MODE } from './constants';
 
 class Domain extends React.Component {
 	constructor(props) {
@@ -44,10 +47,10 @@ class Domain extends React.Component {
 
 		let websites = [];
 		const name = currTab.content;
-		if(name === "all" && !currTab.regex) {
+		if (name === "all" && !currTab.regex) {
 			// get all tabs in this view
 			let websiteSet = new Set();
-			for(let i = 0; i < tabs.length; i++) {
+			for (let i = 0; i < tabs.length; i++) {
 				this.getWebsites(tabs[i]).forEach(site => {
 					websiteSet.add(site);
 				})
@@ -60,13 +63,13 @@ class Domain extends React.Component {
 		this.setState({ websites });
 	}
 
-	siteCompare = ( a, b) => {
+	siteCompare = (a, b) => {
 		return a.url < b.url ? -1 : a.url > b.url ? 1 : 0;
 	}
 
 	getWebsites = tab => {
 		let websites = [];
-		if(tab.regex) {
+		if (tab.regex) {
 			websites = this.grepTabs(tab.content);
 		} else {
 			websites = this.props.domains[tab.content] || [];
@@ -88,9 +91,18 @@ class Domain extends React.Component {
 	}
 
 	render() {
+		const isList = this.props.view.viewMode === VIEW_MODE.list;
 		return (
 			<div className="domain">
-				<WebsiteList websites={this.state.websites} />
+				{isList ?
+					<WebsiteList websites={this.state.websites} />
+					:
+					<WebsiteGrid websites={this.state.websites} />
+				}
+				<ViewMode
+					view={this.props.view}
+					viewPath={this.props.viewPath}
+				/>
 			</div>
 		)
 	}

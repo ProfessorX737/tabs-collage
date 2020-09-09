@@ -21,6 +21,8 @@
   align-items: center;
   justify-content: center;
   font-size: 0.85em;
+  overflow: hidden;
+  cursor: default;
 }
 
 .text-fade-transparent {
@@ -53,11 +55,21 @@
 .close-tab-btn {
   display: flex;
   border-radius: 10px;
-  margin-right: 5px;
 }
 
 .close-tab-btn:hover {
-  background-color: rgba(131, 131, 131, 0.5);
+  /* background-color: rgba(131, 131, 131, 0.5); */
+  color: green;
+}
+
+.close-all-tab-btn {
+  display: flex;
+  border-radius: 10px;
+}
+
+.close-all-tab-btn:hover {
+  /* background-color: rgba(131, 131, 131, 0.5); */
+  color: red;
 }
 
 .close-tab-btn-wrapper {
@@ -68,7 +80,8 @@
 }
 
 .tab-content-wrapper {
-	width: 100%;
+  width: 100%;
+  max-height: 100%;
 	display: flex;
 	justify-content: center;
 	overflow: hidden
@@ -87,8 +100,10 @@
 .tab-input {
 	display: flex;
 	overflow: hidden;
-  margin: 5px;
   width: 100%;
+  max-height: 100%;
+  padding: 5px 0 5px 5px;
+  box-sizing: border-box;
 }
 
 .tab-separator {
@@ -100,4 +115,11 @@
 .tab-name-input {
   min-width: 100px;
   border: 1px solid read;
+}
+
+.tab-options {
+  display: flex;
+  flex-flow: column;
+  margin-right: 5px;
+  transition: all 0.2s;
 }

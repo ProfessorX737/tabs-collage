@@ -8,7 +8,11 @@ import {
 	setTabContent
 } from "./redux/actions"
 import clsx from 'clsx';
-import Close from "@material-ui/icons/Close";
+import {
+	Close,
+	Cancel,
+	HighlightOff
+} from "@material-ui/icons";
 import './tab.css';
 import TextField from '@material-ui/core/TextField';
 
@@ -47,7 +51,7 @@ class Tab extends React.Component {
 	onTabDoubleClick = evt => {
 		evt.stopPropagation();
 		// don't allow editing of domain tabs
-		if(!this.props.tab.regex) return;
+		if (!this.props.tab.regex) return;
 		this.props.setTabEdit({
 			viewPath: this.props.viewPath,
 			isEditing: !this.props.tab.isEditing,
@@ -76,6 +80,8 @@ class Tab extends React.Component {
 	render() {
 		const tab = this.props.tab;
 		const isEditing = tab.isEditing;
+		const isCurrTab = tab.id === this.props.view.currTabId;
+		const showOptions = isCurrTab || this.props.tabWidth > 100
 		return (
 			<div
 				ref={el => { this.tabRef = el }}
@@ -90,7 +96,7 @@ class Tab extends React.Component {
 				style={{
 					width: isEditing ? 'fit-content' : `${this.props.tabWidth}px`,
 					maxWidth: isEditing ? '100%' : '150px',
-					minWidth: isEditing ? '150px' : '55px'
+					minWidth: isEditing ? '150px' : isCurrTab ? '55px' : '35px'
 				}}
 			>
 				<div
@@ -107,6 +113,10 @@ class Tab extends React.Component {
 						>
 							<TextField
 								autoFocus
+								size="small"
+								label="search/regex"
+								margin="dense"
+								variant="filled"
 								value={this.props.tab.content}
 								onChange={this.onTabInputChange}
 								style={{
@@ -124,17 +134,34 @@ class Tab extends React.Component {
 						</div>
 					}
 				</div>
-				<div
-					className="close-tab-btn"
-					onClick={this.onCloseTab}
-				>
-					<Close
-						style={{
-							fontSize: "15px",
-							borderRadius: "10px"
-						}}
-					/>
-				</div>
+				{showOptions &&
+					<div className="tab-options">
+						<div
+							className="close-all-tab-btn"
+							onClick={this.onCloseTab}
+						>
+							<HighlightOff
+								style={{
+									fontSize: "15px",
+									borderRadius: "10px"
+								}}
+							/>
+						</div>
+						{tab.regex &&
+							<div
+								className="close-tab-btn"
+								onClick={this.onCloseTab}
+							>
+								<Close
+									style={{
+										fontSize: "15px",
+										borderRadius: "10px"
+									}}
+								/>
+							</div>
+						}
+					</div>
+				}
 				<div className="tab-separator" />
 			</div>
 		)

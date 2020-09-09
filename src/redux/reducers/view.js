@@ -14,7 +14,7 @@ const initialState = {
     currTabId: "all",
     tabs: [{ id: "all", content: "all" }],
     children: [],
-    viewMode: constants.VIEW_MODE.list
+    viewMode: constants.VIEW_MODE.grid
   },
   domains: {},
   domainIconUrl: {},
@@ -293,7 +293,6 @@ export default function (state = initialState, action) {
         view,
         viewPath
       } = action.payload;
-      const tabs = view.tabs;
       // remove the view
       let newViewTree = removeListItemAtPath({
         treeData: state.viewTree,
@@ -554,7 +553,7 @@ export default function (state = initialState, action) {
           }
         })
       }
-      update(state, updateOb);
+      return update(state, updateOb);
     }
     default: {
       return state;

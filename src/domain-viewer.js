@@ -1,14 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import {
-  splitView
-} from "./redux/actions"
 import SortableTabs from "./sortable-tabs";
 import "./domain-viewer.css";
 import Domain from './domain';
 
-class _DomainViewer extends React.PureComponent {
+export default class DomainViewer extends React.PureComponent {
   render() {
     return (
       <div
@@ -44,18 +40,11 @@ class _DomainViewer extends React.PureComponent {
   }
 }
 
-_DomainViewer.propTypes = {
+DomainViewer.propTypes = {
   view: PropTypes.object.isRequired,
   viewPath: PropTypes.array
 };
 
-_DomainViewer.defaultProps = {
+DomainViewer.defaultProps = {
   viewPath: []
 };
-
-const DomainViewer = connect(
-  null,
-  { splitView }
-)(_DomainViewer);
-
-export default DomainViewer;

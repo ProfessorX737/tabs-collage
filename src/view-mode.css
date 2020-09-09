@@ -1,3 +1,34 @@
-.view-mode {
+.view-mode-wrapper {
+  position: absolute;
+  left: auto;
+  right: auto;
+  top: 0;
+  color: rgba(255, 255, 255, 0.527);
+  border-bottom-right-radius: 7px;
+  border-bottom-left-radius: 7px;
   display: flex;
+  background-color: #13131377;
+  cursor: pointer;
+}
+
+.view-list-mode {
+  display: flex;
+  padding: 2px 5px;
+  border-bottom-left-radius: 7px;
+}
+
+.view-grid-mode {
+  display: flex;
+  padding: 2px 5px;
+  border-bottom-right-radius: 7px;
+}
+
+.view-grid-mode:hover,
+.view-list-mode:hover {
+  color: white;
+}
+
+.view-mode-sel {
+  color: rgb(255, 255, 255);
+  background-color: rgba(255, 255, 255, 0.397);
 }

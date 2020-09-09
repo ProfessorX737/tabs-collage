@@ -28,8 +28,7 @@ class App extends React.Component {
   }
 
   onFocus = () => {
-    console.log(document.visibilityState)
-    if (document.visibilityState === 'visible') {
+    // if (document.visibilityState === 'visible') {
       // chrome.tabs.query({ status: 'complete' }, tabs => {
       //   console.log(JSON.stringify(tabs));
       //   this.props.refreshView({ tabs });
@@ -40,8 +39,7 @@ class App extends React.Component {
       //     this.props.setUrlImgs({ urlImgs });
       //   }
       // })
-      this.props.refreshView({ tabs: sampleData2, urlImgs: sampleImgs });
-    }
+    this.props.refreshView({ tabs: sampleData2, urlImgs: sampleImgs });
   }
 
   componentDidUpdate(prevProps, prevState) {
