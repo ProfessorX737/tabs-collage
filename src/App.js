@@ -14,50 +14,37 @@ import * as chrome from './chrome-api';
 class App extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      initialized: false
+    }
   }
 
   componentDidMount() {
-    window.addEventListener("blur", () => {
-      if (this.blurFilter) this.blurFilter.style.display = 'block';
-    })
-    window.addEventListener("focus", () => {
-      if (this.blurFilter) this.blurFilter.style.display = 'none';
-    })
-    // this.onFocus();
-    // chrome.runtime.sendMessage('init_capture');
-    // chrome.runtime.onMessage.addListener(data => {
-    //   this.props.refreshView(data);
-    // })
     try {
-      chrome.init();
+      chrome.init(() => {
+        this.setState({ initialized: true });
+      });
     } catch (e) {
-      this.onFocus();
+      this.props.refreshView({ tabs: sampleData2, tabImgs: sampleImgs });
     }
-  }
-
-  onFocus = () => {
-    // chrome.tabs.query({ status: 'complete' }, tabs => {
-    //   console.log(JSON.stringify(tabs));
-    //   this.props.refreshView({ tabs });
-    // })
-    // chrome.runtime.sendMessage('', urlImgs => {
-    //   console.log(urlImgs)
-    //   if(urlImgs) {
-    //     this.props.setUrlImgs({ urlImgs });
-    //   }
-    this.props.refreshView({ tabs: sampleData2, tabImgs: sampleImgs });
   }
 
   componentDidUpdate(prevProps, prevState) {
+    if (!this.state.initialized) return;
     try {
-      assert.deepEqual(prevProps.viewTree, this.props.viewTree);
-    } catch (e) {
+      assert.notDeepEqual(prevProps.viewTree, this.props.viewTree);
+      // try {
+      //   chrome.saveViewTree();
+      // } catch (e) {
       // they are different update the view in local storage
+      const viewTreeJson = JSON.stringify(this.props.viewTree);
+      console.log(`saving ${viewTreeJson}`);
       localStorage.setItem(
         constants.LOCAL_STORAGE_KEY,
-        JSON.stringify(this.props.viewTree)
+        viewTreeJson
       );
-    }
+      // }
+    } catch (e) { }
   }
 
   render() {
@@ -68,10 +55,6 @@ class App extends React.Component {
             view={this.props.viewTree}
           />
         </div>
-        <div
-          ref={el => { this.blurFilter = el }}
-          className="blur-filter"
-        />
       </div>
     );
   }

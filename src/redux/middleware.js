@@ -2,11 +2,9 @@ import * as types from "./actionTypes";
 import * as actions from "./actions";
 import assert from 'assert';
 import * as constants from '../constants';
-
-const routeStem = "http://localhost:5000/api";
+// import * as chrome from '../chrome-api';
 
 const setCellChildrenLogic = store => next => action => {
-  console.log(action.type)
   if (action.type === types.SET_CELL_CHILDREN) {
     const {
       parentId,
@@ -24,17 +22,20 @@ const setCellChildrenLogic = store => next => action => {
 
 const refreshViewLogic = store => next => async action => {
   if (action.type === types.REFRESH_VIEW) {
-    const lsKey = constants.LOCAL_STORAGE_KEY;
-    const viewTreeJson = await localStorage.getItem(lsKey);
-    console.log('trying to restore view ')
-    if (viewTreeJson) {
-      console.log('restoring view')
-      // set viewTree with oldView
-      const viewTree = JSON.parse(viewTreeJson);
-      next(actions.setViewTree({ viewTree }));
-    }
-    next(action);
-    // fetch website screenshots we don't have
+    // try {
+    //   chrome.restoreSavedViewTree(() => {
+    //     next(action);
+    //   })
+    // } catch (e) {
+      const lsKey = constants.LOCAL_STORAGE_KEY;
+      const viewTreeJson = await localStorage.getItem(lsKey);
+      if (viewTreeJson) {
+        // set viewTree with oldView
+        const viewTree = JSON.parse(viewTreeJson);
+        next(actions.setViewTree({ viewTree }));
+      }
+      next(action);
+    // }
   } else {
     next(action);
   }

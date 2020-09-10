@@ -63,8 +63,18 @@ class WebsiteGrid extends React.Component {
     const h = w * imgRatio;
     this.imHeight = h;
     const totalHeight = rows * h;
-    if (totalHeight > gridHeight * 1.5) cols += 1;
+    if (totalHeight > gridHeight * 1.3) cols += 1;
     return cols;
+  }
+
+  closeSite = (evt, siteId) => {
+    evt.stopPropagation();
+    chrome.removeTabs([siteId]);
+  }
+
+  openSite = (evt, site) => {
+    evt.stopPropagation();
+    chrome.setTabActive(site)
   }
 
   render() {
@@ -88,7 +98,7 @@ class WebsiteGrid extends React.Component {
                 key={site.id}
                 className="grid-item"
                 ref={el => { this.imgRefs[site.id] = el }}
-                onClick={() => {chrome.setTabActive(site.id)}}
+                onClick={evt => { this.openSite(evt, site); }}
               >
                 <img
                   src={img}
@@ -99,14 +109,14 @@ class WebsiteGrid extends React.Component {
                   className="grid-item-icon"
                 />
                 <div className="grid-item-title">
-                  {site.title}
+                  {site.title}<br/>{site.url}
                 </div>
                 <div className="grid-item-label">
                   {site.title}
                 </div>
                 <div
                   className="grid-item-close-btn"
-                  onClick={() => {chrome.removeTabs([site.id])}}
+                  onClick={evt => { this.closeSite(evt, site.id) }}
                 >
                   <CloseRounded />
                 </div>

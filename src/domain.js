@@ -8,6 +8,7 @@ import WebsiteList from './website-list';
 import WebsiteGrid from './website-grid';
 import ViewMode from './view-mode';
 import { VIEW_MODE } from './constants';
+import { getTabSites } from './search-utils';
 
 class Domain extends React.Component {
 	constructor(props) {
@@ -45,49 +46,18 @@ class Domain extends React.Component {
 		const currTab = tabs[currTabIndex];
 		if (!currTab) return;
 
-		let websites = [];
-		const name = currTab.content;
-		if (name === "all" && !currTab.regex) {
-			// get all tabs in this view
-			let websiteSet = new Set();
-			for (let i = 0; i < tabs.length; i++) {
-				this.getWebsites(tabs[i]).forEach(site => {
-					websiteSet.add(site);
-				})
-			}
-			websites = Array.from(websiteSet);
-		} else {
-			websites = this.getWebsites(currTab);
-		}
-		websites.sort(this.siteCompare);
+		let websites = getTabSites({
+			view: this.props.view, 
+			tab: currTab
+		});
+
+		const isList = this.props.view.viewMode === VIEW_MODE.list;
+		if (isList) { websites.sort(this.siteCompare); }
 		this.setState({ websites });
 	}
 
 	siteCompare = (a, b) => {
 		return a.url < b.url ? -1 : a.url > b.url ? 1 : 0;
-	}
-
-	getWebsites = tab => {
-		let websites = [];
-		if (tab.regex) {
-			websites = this.grepTabs(tab.content);
-		} else {
-			websites = this.props.domains[tab.content] || [];
-		}
-		return websites;
-	}
-
-	grepTabs = regex => {
-		const reg = RegExp(regex, 'i');
-		const sites = Object.values(this.props.chromeTabMap);
-		let websites = [];
-		for (let i = 0; i < sites.length; i++) {
-			const site = sites[i];
-			if (site.title.match(reg) || site.url.match(reg)) {
-				websites.push(site);
-			}
-		}
-		return websites;
 	}
 
 	render() {
@@ -117,7 +87,7 @@ export default connect(
 	state => ({
 		domains: state.view.domains,
 		urlImgs: state.view.urlImgs,
-		chromeTabMap: state.view.chromeTabMap
+		websites: state.view.websites
 	}),
 	null
 )(Domain)

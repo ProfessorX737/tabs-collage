@@ -93,13 +93,12 @@ class SortableTabs extends React.Component {
 
   onSetTabs = newTabs => {
     try {
-      assert.deepEqual(this.props.view.tabs, newTabs);
-    } catch (e) {
+      assert.notDeepEqual(this.props.view.tabs, newTabs);
       this.props.setTabs({
         viewPath: this.props.viewPath,
         newTabs
       })
-    }
+    } catch (e) {}
   }
 
   setTabWidth = () => {

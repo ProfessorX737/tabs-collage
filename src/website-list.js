@@ -18,14 +18,11 @@ class WebsiteList extends React.Component {
 		this.imgRefs = {};
 	}
 
-	// componentDidMount() {
-	// 	const first = this.props.websites[0];
-	// 	if (first) {
-	// 		this.setState({ currSite: first.url });
-	// 		this.myrefs[first.url].focus();
-	// 		console.log(first)
-	// 	}
-	// }
+	componentDidMount() {
+		window.addEventListener("blur", () => {
+			if (this.blurFilter) this.blurFilter.style.display = 'block';
+		})
+	}
 
 	// componentDidUpdate(prevProps) {
 	// 	try {
@@ -39,14 +36,14 @@ class WebsiteList extends React.Component {
 	// 	} catch (e) { }
 	// }
 
-	onFocus = (evt, url) => {
-		this.setState({ currSite: url });
+	onFocus = (evt, siteId) => {
+		this.setState({ currSite: siteId });
 		const currEl = document.activeElement;
 		if (currEl.getAttribute('class') === 'site-item') {
 			setTimeout(() => {
-				const imgEl = this.imgRefs[url];
+				const imgEl = this.imgRefs[siteId];
 				if (imgEl) {
-					this.imgRefs[url].scrollIntoView({
+					this.imgRefs[siteId].scrollIntoView({
 						// behavior: "smooth",
 						block: "center"
 					})
@@ -125,15 +122,14 @@ class WebsiteList extends React.Component {
 	}
 
 	onListBackgroundClick = evt => {
-		const currEl = document.activeElement;
-		if (currEl && currEl.getAttribute('class') === 'site-item') {
-			chrome.setTabActive(currEl.id);
-		}
+		evt.preventDefault();
+		const site = this.props.chromeTabMap[this.state.currSite];
+		chrome.setTabActive(site);
 	}
 
 	onWebsiteClick = (evt, site) => {
 		evt.stopPropagation();
-		chrome.setTabActive(site.id);
+		chrome.setTabActive(site);
 	}
 
 	render() {
@@ -169,11 +165,11 @@ class WebsiteList extends React.Component {
 					ref={el => { this.floatSiteList = el }}
 					className="float-site-list"
 					onWheel={this.onWheel}
+					onClick={this.onListBackgroundClick}
 				>
 					<div
 						ref={el => { this.siteList = el }}
 						className="site-list"
-						onClick={this.onListBackgroundClick}
 					>
 						{this.props.websites.map((site, index) => {
 							return (
@@ -191,7 +187,7 @@ class WebsiteList extends React.Component {
 									<div className="close-item-btn"
 										onClick={evt => this.onItemClose(evt, site)}
 									>
-										<CloseRounded fontSize="small"/>
+										<CloseRounded fontSize="small" />
 									</div>
 									{
 										site.favIconUrl &&
@@ -207,6 +203,14 @@ class WebsiteList extends React.Component {
 							)
 						})}
 					</div>
+					<div
+						ref={el => { this.blurFilter = el }}
+						className="blur-filter"
+						onClick={evt => { 
+							evt.stopPropagation(); 
+							if(this.blurFilter) this.blurFilter.style.display = "none";
+						}}
+					/>
 				</div>
 				<ReactResizeDetector
 					handleHeight
@@ -224,7 +228,8 @@ WebsiteList.propTypes = {
 
 export default connect(
 	state => ({
-		tabImgs: state.view.tabImgs
+		tabImgs: state.view.tabImgs,
+		chromeTabMap: state.view.chromeTabMap
 	}),
 	null
 )(WebsiteList);

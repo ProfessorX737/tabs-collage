@@ -14,6 +14,7 @@ import {
 } from "@material-ui/icons";
 import './tab.css';
 import * as chrome from './chrome-api';
+import { getTabSites } from './search-utils';
 
 class Tab extends React.Component {
 	constructor(props) {
@@ -34,9 +35,13 @@ class Tab extends React.Component {
 		this.tabRef.scrollIntoView();
 	}
 
-	onCloseAllTab = evt => {
+	onCloseAll = evt => {
 		evt.stopPropagation();
-		// chrome.removeTabs(ids);
+		const tabIds = getTabSites({
+			view: this.props.view, 
+			tab: this.props.tab
+		}).map(site => site.id);
+		chrome.removeTabs(tabIds);
 	}
 
 	onCloseTab = evt => {
@@ -116,6 +121,7 @@ class Tab extends React.Component {
 							onKeyDown={this.onTabInputKeyDown}
 						>
 							<input
+								autoFocus
 								className='tab-input'
 								type="text"
 								value={this.props.tab.content}
@@ -139,7 +145,7 @@ class Tab extends React.Component {
 					<div className="tab-options">
 						<div
 							className="close-all-tab-btn"
-							onClick={this.onCloseAllTab}
+							onClick={this.onCloseAll}
 						>
 							<HighlightOff
 								style={{
