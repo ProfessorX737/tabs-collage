@@ -14,13 +14,13 @@
 .view-list-mode {
   display: flex;
   padding: 2px 5px;
-  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
 }
 
 .view-grid-mode {
   display: flex;
   padding: 2px 5px;
-  border-bottom-right-radius: 7px;
+  border-bottom-left-radius: 7px;
 }
 
 .view-grid-mode:hover,

@@ -122,6 +122,7 @@ class WebsiteList extends React.Component {
 	}
 
 	onListBackgroundClick = evt => {
+		console.log('list background click')
 		evt.preventDefault();
 		const site = this.props.chromeTabMap[this.state.currSite];
 		chrome.setTabActive(site);

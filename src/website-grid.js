@@ -6,6 +6,7 @@ import { withResizeDetector } from 'react-resize-detector';
 import clsx from 'clsx';
 import CloseRounded from "@material-ui/icons/CloseRounded";
 import * as chrome from './chrome-api';
+import SearchBar from './search-bar';
 
 let imgRef = null;
 
@@ -17,8 +18,7 @@ class WebsiteGrid extends React.Component {
       websites: [],
       currSite: null,
       imgRatio: 190 / 362,
-      gridRef: null,
-      notAll: false
+      notAll: false,
     }
   }
 
@@ -63,7 +63,7 @@ class WebsiteGrid extends React.Component {
     const h = w * imgRatio;
     this.imHeight = h;
     const totalHeight = rows * h;
-    if (totalHeight > gridHeight * 1.3) cols += 1;
+    if (totalHeight > gridHeight * 1.2) cols += 1;
     return cols;
   }
 

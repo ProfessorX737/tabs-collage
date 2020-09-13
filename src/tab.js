@@ -35,10 +35,20 @@ class Tab extends React.Component {
 		this.tabRef.scrollIntoView();
 	}
 
+	// close all sites under this tab
 	onCloseAll = evt => {
 		evt.stopPropagation();
+		// don't close the all tab but still close all sites
+		if (this.props.tab.content !== "all") {
+			this.props.closeTab({
+				view: this.props.view,
+				viewPath: this.props.viewPath,
+				tabId: this.props.tab.id,
+				tabIndex: this.props.tabIndex
+			})
+		}
 		const tabIds = getTabSites({
-			view: this.props.view, 
+			view: this.props.view,
 			tab: this.props.tab
 		}).map(site => site.id);
 		chrome.removeTabs(tabIds);
@@ -48,11 +58,10 @@ class Tab extends React.Component {
 		evt.stopPropagation();
 		// we don't want to remove domain tabs
 		if (!this.props.tab.regex) return;
-		const tabId = this.props.tab.id;
 		this.props.closeTab({
 			view: this.props.view,
 			viewPath: this.props.viewPath,
-			tabId,
+			tabId: this.props.tab.id,
 			tabIndex: this.props.tabIndex
 		})
 	}

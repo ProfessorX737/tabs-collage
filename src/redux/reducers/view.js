@@ -159,8 +159,10 @@ export default function (state = initialState, action) {
       firstView.tabs.forEach(tab => {
         ids.add(tab.id);
       })
+      // if first view does not have tab and it is a domain tab 
+      // then push it on
       view.tabs.forEach(tab => {
-        if(!ids.has(tab.id)) newTabs.push(tab);
+        if(!ids.has(tab.id) && !tab.regex) newTabs.push(tab);
       })
       newViewTree = update(newViewTree, getUpdateAtPathOb({
           treeData: newViewTree,
@@ -189,17 +191,17 @@ export default function (state = initialState, action) {
       for (let i = 0; i < tabs.length; i++) {
         chromeTabMap[tabs[i].id] = tabs[i];
         const domain = getDomainFromUrl(tabs[i].url);
-        const url = tabs[i].url;
         if (domains[domain]) {
           domains[domain].push(tabs[i]);
         } else {
           domains[domain] = [tabs[i]];
         }
-        domainIconUrl[domain] = tabs[i].favIconUrl;
+        const icon = tabs[i].favIconUrl;
+        domainIconUrl[domain] = icon;
       }
       let domainSet = new Set(Object.keys(domains));
       let viewTreeCopy = JSON.parse(JSON.stringify(state.viewTree));
-      cleanView(viewTreeCopy, domains, domainSet);
+      cleanView(viewTreeCopy, domains, domainSet, chromeTabMap);
       let firstView = getFirstLeafView(viewTreeCopy);
       domainSet.forEach(domain => {
         const id = uuidv1();
@@ -311,17 +313,17 @@ export default function (state = initialState, action) {
   }
 }
 
-const cleanView = (view, domains, domainSet) => {
+const cleanView = (view, domains, domainSet, chromeTabMap) => {
   let newViewTabs = [];
   for (let i = 0; i < view.tabs.length; i++) {
-    const name = view.tabs[i].content;
-    const tab = view.tabs[i];
+    let tab = view.tabs[i];
+    const name = tab.content;
     // only add to newViewTabs if this domain still exists
     if (name === "all" || domains[name] || tab.regex) {
       // remove this domain from domainSet so at the end we can
       // find out which domains are new and add them to a view
       domainSet.delete(name);
-      newViewTabs.push(view.tabs[i]);
+      newViewTabs.push(tab);
     }
   }
   view.tabs = newViewTabs;

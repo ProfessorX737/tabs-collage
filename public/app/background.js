@@ -83,8 +83,11 @@ const sendData = () => {
 			}
 		}
 		chrome.runtime.sendMessage({
-			tabs,
-			tabImgs: cleantabImgs
+			type: 'data',
+			data: {
+				tabs,
+				tabImgs: cleantabImgs
+			}
 		})
 	})
 }
@@ -114,6 +117,23 @@ function initCapture(tabIds) {
 		sendData();
 		return;
 	}
+	let popupWindowId = null;
+	chrome.windows.getCurrent(window => {
+		const width = window.width * 0.2;
+		const height = window.height * 0.2;
+		const top = window.top + window.height / 2 - height / 2;
+		const left = window.left + window.width / 2 - width / 2;
+		const popupUrl = chrome.extension.getURL('popup.html');
+		chrome.windows.create({
+			url: popupUrl,
+			type: 'popup',
+			focused: true,
+			width,
+			height,
+			top,
+			left
+		}, popupWindow => { popupWindowId = popupWindow.id });
+	})
 	initializing = true;
 	openAllWindows(minWindows => {
 		const openTab = i => {
@@ -121,19 +141,29 @@ function initCapture(tabIds) {
 				initializing = false;
 				minimizeWindows(minWindows);
 				openExtension(() => { sendData() });
+				// close progress window if exists
+				if(popupWindowId) chrome.windows.remove(popupWindowId);
 			} else {
 				chrome.tabs.update(tabIds[i], { active: true }, tab => {
 					chrome.tabs.captureVisibleTab(tab.windowId, dataUrl => {
 						if (dataUrl) {
-							console.log('captured img');
 							tabImgs[tab.id] = dataUrl;
 						}
+						sendProgress(i + 1, tabIds.length);
 						openTab(i + 1);
 					})
 				});
 			}
 		}
 		openTab(0);
+	})
+}
+
+function sendProgress(progress, numTasks) {
+	chrome.runtime.sendMessage({
+		type: 'progress',
+		progress,
+		numTasks
 	})
 }
 

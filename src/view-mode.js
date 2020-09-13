@@ -27,16 +27,16 @@ class ViewMode extends React.Component {
     return (
       <div className="view-mode-wrapper">
         <div
-          onClick={() => { this.onClickViewMode(VIEW_MODE.list) }}
-          className={clsx("view-list-mode", isList && "view-mode-sel")}
-        >
-          <ViewListRounded />
-        </div>
-        <div
           onClick={() => { this.onClickViewMode(VIEW_MODE.grid) }}
           className={clsx("view-grid-mode", !isList && "view-mode-sel")}
         >
           <ViewModuleRounded />
+        </div>
+        <div
+          onClick={() => { this.onClickViewMode(VIEW_MODE.list) }}
+          className={clsx("view-list-mode", isList && "view-mode-sel")}
+        >
+          <ViewListRounded />
         </div>
       </div>
     )
@@ -45,7 +45,7 @@ class ViewMode extends React.Component {
 
 ViewMode.propTypes = {
   view: PropTypes.object.isRequired,
-  viewPath: PropTypes.array.isRequired
+  viewPath: PropTypes.array.isRequired,
 }
 
 export default connect(

@@ -8,13 +8,16 @@ import WebsiteList from './website-list';
 import WebsiteGrid from './website-grid';
 import ViewMode from './view-mode';
 import { VIEW_MODE } from './constants';
-import { getTabSites } from './search-utils';
+import { getTabSites, grepSites } from './search-utils';
+import SearchBar from './search-bar';
+import { changeTab } from './redux/actions';
 
 class Domain extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			websites: [],
+			search: ''
 		}
 	}
 
@@ -22,14 +25,16 @@ class Domain extends React.Component {
 		this.setWebsites();
 	}
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps, prevState) {
 		try {
-			assert.notDeepEqual({
+			assert.notDeepStrictEqual({
 				view: this.props.view,
-				domains: this.props.domains
+				domains: this.props.domains,
+				search: this.state.search
 			}, {
 				view: prevProps.view,
-				domains: prevProps.domains
+				domains: prevProps.domains,
+				search: prevState.search
 			})
 			this.setWebsites();
 		} catch (e) { }
@@ -44,12 +49,26 @@ class Domain extends React.Component {
 			if (tabs[currTabIndex].id === currTabId) break;
 		}
 		const currTab = tabs[currTabIndex];
-		if (!currTab) return;
+		if (!currTab) {
+			// likely this tab was closed externally so set currTab
+			// to be the first one
+			const firstTabId = tabs[0]?.id || 0;
+			this.props.changeTab({
+				viewPath: this.props.viewPath,
+				tabId: firstTabId
+			});
+			return;
+		}
 
 		let websites = getTabSites({
-			view: this.props.view, 
+			view: this.props.view,
 			tab: currTab
 		});
+
+		// filter again based on search if search string is non empty
+		if(this.state.search) {
+			websites = grepSites(websites, this.state.search);
+		}
 
 		const isList = this.props.view.viewMode === VIEW_MODE.list;
 		if (isList) { websites.sort(this.siteCompare); }
@@ -73,6 +92,10 @@ class Domain extends React.Component {
 					view={this.props.view}
 					viewPath={this.props.viewPath}
 				/>
+				<SearchBar
+					search={this.state.search}
+					onSearchChange={search => this.setState({ search })}
+				/>
 			</div>
 		)
 	}
@@ -89,5 +112,5 @@ export default connect(
 		urlImgs: state.view.urlImgs,
 		websites: state.view.websites
 	}),
-	null
+	{ changeTab }
 )(Domain)

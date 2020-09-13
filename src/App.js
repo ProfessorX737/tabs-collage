@@ -32,13 +32,12 @@ class App extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (!this.state.initialized) return;
     try {
-      assert.notDeepEqual(prevProps.viewTree, this.props.viewTree);
+      assert.notDeepStrictEqual(prevProps.viewTree, this.props.viewTree);
       // try {
       //   chrome.saveViewTree();
       // } catch (e) {
       // they are different update the view in local storage
       const viewTreeJson = JSON.stringify(this.props.viewTree);
-      console.log(`saving ${viewTreeJson}`);
       localStorage.setItem(
         constants.LOCAL_STORAGE_KEY,
         viewTreeJson

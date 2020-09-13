@@ -6,7 +6,7 @@
 }
 
 .site-img-list {
-	margin: 30% 3em 50% 2%;
+	margin: 5em 3em 50% 2%;
 	display: flex;
 	flex-flow: column;
 	align-items: center;
@@ -101,6 +101,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.158);
-	z-index: 10;
+	background-color: rgba(0, 0, 0, 0.158);
+	display: none;
 }

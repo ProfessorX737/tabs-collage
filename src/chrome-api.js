@@ -4,8 +4,10 @@ import * as actions from './redux/actions';
 
 export function init(callback = () => {}) {
   chrome.runtime.sendMessage('init_capture');
-  chrome.runtime.onMessage.addListener(data => {
-    store.dispatch(actions.refreshView(data));
+  chrome.runtime.onMessage.addListener(msg => {
+    if(msg.type === "data") {
+      store.dispatch(actions.refreshView(msg.data));
+    }
     callback();
   })
 }
@@ -23,9 +25,6 @@ export function saveViewTree() {
 export async function restoreSavedViewTree(callback = () => {}) {
   console.log('trying to restore view');
   chrome.runtime.sendMessage('get_view', viewTreeJson => {
-    if(viewTreeJson !== 'undefined') {
-      console.log(`chicken: ${viewTreeJson}`);
-    }
     if(viewTreeJson !== 'undefined') {
       console.log(viewTreeJson);
       const viewTree = JSON.parse(viewTreeJson);

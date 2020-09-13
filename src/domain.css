@@ -6,3 +6,10 @@
     height: 100%;
     overflow: hidden;
 }
+
+.domain-options {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
