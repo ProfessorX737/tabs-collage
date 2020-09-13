@@ -32,8 +32,15 @@
 
 .grid-img {
   width: 100% !important;
-  height: auto !important;
+  height: auto;
   box-sizing: border-box;
+}
+
+.grid-single-img {
+  width: 80%;
+  height: auto;
+  box-sizing: border-box;
+  margin: 0 auto;
 }
 
 .grid-item-icon {

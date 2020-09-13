@@ -99,7 +99,7 @@ class Tab extends React.Component {
 		const tab = this.props.tab;
 		const isEditing = tab.isEditing;
 		const isCurrTab = tab.id === this.props.view.currTabId;
-		const showOptions = isCurrTab || this.props.tabWidth > 100
+		const showOptions = isCurrTab || this.props.tabWidth > 70
 		return (
 			<div
 				ref={el => { this.tabRef = el }}

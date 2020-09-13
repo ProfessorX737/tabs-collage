@@ -15,11 +15,11 @@ function captureVisibleTab() {
 	chrome.tabs.query({ currentWindow: true, active: true }, tabs => {
 		const tab = tabs[0];
 		if (!isValidTab(tab)) return;
-		console.log('attempting to capture tab')
 		chrome.tabs.captureVisibleTab(tab.windowId, dataUrl => {
-			if (dataUrl) {
+			if (chrome.runtime.lastError) {
+				console.log(chrome.runtime.lastError.message);
+			} else {
 				tabImgs[tab.id] = dataUrl;
-				console.log('captured')
 				sendData();
 			}
 		})
@@ -32,8 +32,8 @@ function isValidTab(tab) {
 	lastTabStatus[tab.id] = tab.status;
 	// if url starts with http and is either first time loading or complete
 	// it is valid so return true;
-	if ((tab.url?.match(/^https?:\/\//) || tab.pendingUrl?.match(/^https?:\/\//)
-		&& (!prevStatus || prevStatus === "complete"))) {
+	if ((tab.url?.match(/^https?:\/\//) || tab.pendingUrl?.match(/^https?:\/\//))
+		&& (!prevStatus || prevStatus === "complete")) {
 		return true;
 	}
 	return false;
@@ -58,7 +58,6 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
 			tabs.forEach(tab => {
 				if (isValidTab(tab) && !tabImgs[tab.id]) tabIds.push(tab.id);
 			})
-			console.log(tabs);
 			initCapture(tabIds);
 		})
 	} else if (msg === 'refresh') {
@@ -119,8 +118,8 @@ function initCapture(tabIds) {
 	}
 	let popupWindowId = null;
 	chrome.windows.getCurrent(window => {
-		const width = window.width * 0.2;
-		const height = window.height * 0.2;
+		const width = Math.max(window.width * 0.2, 500);
+		const height = Math.max(window.height * 0.2, 200);
 		const top = window.top + window.height / 2 - height / 2;
 		const left = window.left + window.width / 2 - width / 2;
 		const popupUrl = chrome.extension.getURL('popup.html');
@@ -142,15 +141,17 @@ function initCapture(tabIds) {
 				minimizeWindows(minWindows);
 				openExtension(() => { sendData() });
 				// close progress window if exists
-				if(popupWindowId) chrome.windows.remove(popupWindowId);
+				if (popupWindowId) chrome.windows.remove(popupWindowId);
 			} else {
 				chrome.tabs.update(tabIds[i], { active: true }, tab => {
 					chrome.tabs.captureVisibleTab(tab.windowId, dataUrl => {
-						if (dataUrl) {
+						if (chrome.runtime.lastError) {
+							console.log(chrome.runtime.lastError.message);
+						} else {
 							tabImgs[tab.id] = dataUrl;
+							sendProgress(i + 1, tabIds.length);
+							openTab(i + 1);
 						}
-						sendProgress(i + 1, tabIds.length);
-						openTab(i + 1);
 					})
 				});
 			}

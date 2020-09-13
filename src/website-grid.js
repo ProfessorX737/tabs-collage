@@ -3,12 +3,11 @@ import './website-grid.css';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withResizeDetector } from 'react-resize-detector';
-import clsx from 'clsx';
 import CloseRounded from "@material-ui/icons/CloseRounded";
 import * as chrome from './chrome-api';
-import SearchBar from './search-bar';
+import * as constants from './constants';
+import clsx from 'clsx';
 
-let imgRef = null;
 
 class WebsiteGrid extends React.Component {
   constructor(props) {
@@ -22,35 +21,13 @@ class WebsiteGrid extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.filterSitesOnImg();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.websites !== prevProps.websites) {
-      this.filterSitesOnImg();
-    }
-  }
-
-  filterSitesOnImg = () => {
-    const websites = this.props.websites.filter(site => {
-      return Boolean(this.props.tabImgs[site.id]);
-    })
-    let notAll = false;
-    if (websites.length < this.props.websites.length) notAll = true;
-    this.setState({
-      websites,
-      notAll
-    })
-  }
-
   // calculate number of columns for best fit
   // given img ratio, grid ratio and number of images
   calcColumnCount = () => {
     if (!this.props.width) return 2;
     const gridWidth = this.props.width;
     const gridHeight = this.props.height;
-    const numImgs = this.state.websites.length;
+    const numImgs = this.props.websites.length;
     const imgRatio = this.state.imgRatio;
     const gridRatio = gridWidth / gridHeight;
     let cols = Math.sqrt(numImgs * imgRatio * gridRatio);
@@ -80,23 +57,19 @@ class WebsiteGrid extends React.Component {
   render() {
     return (
       <div className="grid-wrapper">
-        {this.state.notAll &&
-          <div className="grid-notice">
-            Some images not available, see in list mode
-          </div>
-        }
         <div
           className="website-grid"
           style={{
             columnCount: this.calcColumnCount()
           }}
         >
-          {this.state.websites.map((site, index) => {
-            const img = this.props.tabImgs[site.id];
+          {this.props.websites.map((site, index) => {
+            let img = this.props.tabImgs[site.id];
+            if (!img) img = constants.PLACEHOLDER_IMAGE;
             return (
               <div
                 key={site.id}
-                className="grid-item"
+                className={clsx("grid-item", this.props.websites.length === 1 && "grid-single-img")}
                 ref={el => { this.imgRefs[site.id] = el }}
                 onClick={evt => { this.openSite(evt, site); }}
               >
@@ -109,7 +82,7 @@ class WebsiteGrid extends React.Component {
                   className="grid-item-icon"
                 />
                 <div className="grid-item-title">
-                  {site.title}<br/>{site.url}
+                  {site.title}<br />{site.url}
                 </div>
                 <div className="grid-item-label">
                   {site.title}

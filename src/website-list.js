@@ -6,6 +6,7 @@ import ReactResizeDetector from 'react-resize-detector';
 import clsx from 'clsx';
 import CloseRounded from "@material-ui/icons/CloseRounded";
 import * as chrome from './chrome-api';
+import * as constants from './constants';
 
 class WebsiteList extends React.Component {
 	constructor(props) {
@@ -24,18 +25,6 @@ class WebsiteList extends React.Component {
 		})
 	}
 
-	// componentDidUpdate(prevProps) {
-	// 	try {
-	// 		assert.notDeepEqual(prevProps, this.props);
-	// 		const first = this.props.websites[0];
-	// 		if (first) {
-	// 			this.setState({ currSite: first.url });
-	// 			this.myrefs[first.url].focus();
-	// 		}
-
-	// 	} catch (e) { }
-	// }
-
 	onFocus = (evt, siteId) => {
 		this.setState({ currSite: siteId });
 		const currEl = document.activeElement;
@@ -44,7 +33,6 @@ class WebsiteList extends React.Component {
 				const imgEl = this.imgRefs[siteId];
 				if (imgEl) {
 					this.imgRefs[siteId].scrollIntoView({
-						// behavior: "smooth",
 						block: "center"
 					})
 				}
@@ -53,23 +41,28 @@ class WebsiteList extends React.Component {
 		}
 	}
 
-	onKeyDown = evt => {
+	onKeyDown = (evt, site, index) => {
 		const siteEls = [...evt.target.parentNode.children];
-		const index = siteEls.indexOf(evt.target);
 		if (evt.key === "ArrowDown") {
 			evt.preventDefault();
 			if (siteEls[index + 1]) {
 				const nextEl = siteEls[index + 1];
-				// this.onFocus(nextEl.getAttribute('url'));
 				nextEl.focus();
 			}
 		} else if (evt.key === "ArrowUp") {
 			evt.preventDefault();
 			if (siteEls[index - 1]) {
 				const nextEl = siteEls[index - 1];
-				// this.onFocus(nextEl.getAttribute('url'));
 				nextEl.focus();
 			}
+		} else if (evt.key === 'd') {
+			// focus next el then delete current
+			const inc = index === siteEls.length - 1 ? -1 : 1;
+			const nextEl = siteEls[index + inc];
+			if (nextEl) nextEl.focus();
+			chrome.removeTabs([site.id]);
+		} else if (evt.key === 'Enter') {
+			chrome.setTabActive(site);
 		}
 	}
 
@@ -109,10 +102,11 @@ class WebsiteList extends React.Component {
 
 	calcImgSize = () => {
 		if (this.websiteList) {
-			let height = this.websiteList.clientHeight;
-			let width = this.websiteList.clientWidth;
-			height = `${(height + width) * .3}px`;
-			width = 'auto';
+			let H = this.websiteList.clientHeight;
+			let W = this.websiteList.clientWidth;
+			let height = Math.min((H + W) * .3, H - 10);
+			height = `${height}px`;
+			const width = 'auto';
 			return {
 				height,
 				width
@@ -135,90 +129,97 @@ class WebsiteList extends React.Component {
 
 	render() {
 		return (
-			<div
-				ref={el => { this.websiteList = el }}
-				className="website-list"
-			>
+			<>
 				<div
-					ref={el => { this.imgList = el }}
-					className="site-img-list"
-				>
-					{this.props.websites.map((site, index) => {
-						const img = this.props.tabImgs[site.id];
-						return (
-							<div
-								key={site.id}
-								className={clsx("img-item", this.state.currSite === site.id && "img-item-focused")}
-								ref={el => { this.imgRefs[site.id] = el }}
-							>
-								{img ?
-									<img key={site.id} src={img} style={{ ...this.calcImgSize() }} />
-									:
-									<div className="img-placeholder">
-										{site.title} (image not available)
-									</div>
-								}
-							</div>
-						)
-					})}
-				</div>
-				<div
-					ref={el => { this.floatSiteList = el }}
-					className="float-site-list"
-					onWheel={this.onWheel}
-					onClick={this.onListBackgroundClick}
+					ref={el => { this.websiteList = el }}
+					className="website-list"
 				>
 					<div
-						ref={el => { this.siteList = el }}
-						className="site-list"
+						ref={el => { this.imgList = el }}
+						className="site-img-list"
 					>
 						{this.props.websites.map((site, index) => {
+							let img = this.props.tabImgs[site.id];
+							if (!img) img = constants.PLACEHOLDER_IMAGE;
 							return (
 								<div
 									key={site.id}
-									ref={el => { this.myrefs[site.id] = el }}
-									siteid={site.id}
-									tabIndex={-1}
-									className="site-item"
-									onFocus={evt => { this.onFocus(evt, site.id) }}
-									onKeyDown={this.onKeyDown}
-									onMouseEnter={evt => { evt.target.focus() }}
-									onClick={evt => this.onWebsiteClick(evt, site)}
+									className={clsx("img-item", this.state.currSite === site.id && "img-item-focused")}
+									ref={el => { this.imgRefs[site.id] = el }}
 								>
-									<div className="close-item-btn"
-										onClick={evt => this.onItemClose(evt, site)}
-									>
-										<CloseRounded fontSize="small" />
-									</div>
-									{
-										site.favIconUrl &&
-										<img
-											className="list-icon"
-											src={site.favIconUrl}
-											width={20}
-											height={20}
-										/>
-									}
-									{site.title}
+									{/* {img ? */}
+									<img key={site.id} src={img} style={{ ...this.calcImgSize() }} />
+									{/* : */}
+									{/* } */}
+									<img
+										src={site.favIconUrl}
+										className="list-img-icon"
+									/>
 								</div>
 							)
 						})}
 					</div>
 					<div
+						ref={el => { this.floatSiteList = el }}
+						className="float-site-list"
+						onWheel={this.onWheel}
+						onClick={this.onListBackgroundClick}
+					>
+						<div
+							ref={el => { this.siteList = el }}
+							className="site-list"
+						>
+							{this.props.websites.map((site, index) => {
+								return (
+									<div
+										key={site.id}
+										ref={el => { this.myrefs[site.id] = el }}
+										siteid={site.id}
+										tabIndex={-1}
+										className="site-item"
+										onFocus={evt => { this.onFocus(evt, site.id) }}
+										onKeyDown={evt => { this.onKeyDown(evt, site, index) }}
+										onMouseEnter={evt => { evt.target.focus() }}
+										onClick={evt => this.onWebsiteClick(evt, site)}
+									>
+										<div className="close-item-btn"
+											onClick={evt => this.onItemClose(evt, site)}
+										>
+											<CloseRounded fontSize="small" />
+										</div>
+										{
+											site.favIconUrl &&
+											<img
+												className="list-icon"
+												src={site.favIconUrl}
+												width={20}
+												height={20}
+											/>
+										}
+										{site.title}
+									</div>
+								)
+							})}
+						</div>
+					</div>
+					<div
 						ref={el => { this.blurFilter = el }}
 						className="blur-filter"
-						onClick={evt => { 
-							evt.stopPropagation(); 
-							if(this.blurFilter) this.blurFilter.style.display = "none";
+						onClick={evt => {
+							evt.stopPropagation();
+							if (this.blurFilter) this.blurFilter.style.display = "none";
 						}}
 					/>
+					<ReactResizeDetector
+						handleHeight
+						handleWidth
+						onResize={() => { this.setState({ resized: !this.state.resized }) }}
+					/>
 				</div>
-				<ReactResizeDetector
-					handleHeight
-					handleWidth
-					onResize={() => { this.setState({ resized: !this.state.resized }) }}
-				/>
-			</div >
+				<div className="img-placeholder">
+					{this.props.chromeTabMap[this.state.currSite]?.url}
+				</div>
+			</>
 		)
 	}
 }
