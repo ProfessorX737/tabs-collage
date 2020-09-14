@@ -7,6 +7,7 @@ import CloseRounded from "@material-ui/icons/CloseRounded";
 import * as chrome from './chrome-api';
 import * as constants from './constants';
 import clsx from 'clsx';
+import assert from 'assert';
 
 
 class WebsiteGrid extends React.Component {
@@ -14,11 +15,42 @@ class WebsiteGrid extends React.Component {
     super(props);
     this.imgRefs = [];
     this.state = {
-      websites: [],
-      currSite: null,
       imgRatio: 190 / 362,
-      notAll: false,
     }
+  }
+
+  componentDidUpdate(prevProps) {
+    try {
+      assert.notDeepStrictEqual(prevProps.websites, this.props.websites);
+      this.averageImgRatios();
+    } catch(e) {}
+  }
+
+  // load all images by themselves to find the height/width ratio
+  // works around the synchronous behaviour of image loading
+  averageImgRatios = () => {
+    let numLoading = this.props.websites.length;
+    let imgRatios = [];
+    const onload = (img) => { 
+      imgRatios.push(img.height/img.width);
+      --numLoading === 0 && this.onAllImagesLoaded(imgRatios);
+    }
+    for(let i = 0; i < this.props.websites.length; i++) {
+      const siteId = this.props.websites[i].id;
+      const src = this.props.tabImgs[siteId] || constants.PLACEHOLDER_IMAGE;
+      const img = new Image();
+      img.src = src;
+      img.onload = () => { onload(img) };
+    }
+  }
+
+  onAllImagesLoaded = imgRatios => {
+    let imgRatioSum = 0;
+    for(let i = 0; i < imgRatios.length; i++) {
+      imgRatioSum += imgRatios[i];
+    }
+    const avgImgRatio = imgRatioSum / imgRatios.length;
+    this.setState({ imgRatio: avgImgRatio });
   }
 
   // calculate number of columns for best fit
@@ -75,10 +107,12 @@ class WebsiteGrid extends React.Component {
               >
                 <img
                   src={img}
+                  alt={site.title}
                   className="grid-img"
                 />
                 <img
                   src={site.favIconUrl}
+                  alt={site.favIconUrl}
                   className="grid-item-icon"
                 />
                 <div className="grid-item-title">

@@ -8,7 +8,6 @@ import { connect } from "react-redux";
 import {
   changeTab,
   setTabs,
-  setTabView,
   addTab
 } from "./redux/actions";
 import assert from "assert";
@@ -213,7 +212,6 @@ export default connect(
   {
     changeTab,
     setTabs,
-    setTabView,
     addTab
   }
 )(SortableTabs)

@@ -28,7 +28,7 @@ const getDomainOrRegexSites = (sites, tab) => {
   } else {
     // if tab content is not regex then it has to be a domain name
     const domains = store.getState().view.domains;
-    results = domains[tab.content];
+    results = domains[tab.content] || [];
   }
   return results;
 }

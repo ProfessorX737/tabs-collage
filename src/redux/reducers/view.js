@@ -196,8 +196,9 @@ export default function (state = initialState, action) {
         } else {
           domains[domain] = [tabs[i]];
         }
+        // use the given favIconUrl for domain if it exists
         const icon = tabs[i].favIconUrl;
-        domainIconUrl[domain] = icon;
+        if(icon) domainIconUrl[domain] = icon;
       }
       let domainSet = new Set(Object.keys(domains));
       let viewTreeCopy = JSON.parse(JSON.stringify(state.viewTree));
@@ -207,8 +208,7 @@ export default function (state = initialState, action) {
         const id = uuidv1();
         firstView.tabs.push({
           id,
-          content: domain,
-          icon: domainIconUrl[domain]
+          content: domain
         });
       })
       return {

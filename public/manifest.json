@@ -4,6 +4,11 @@
   "manifest_version": 2,
   "description": "Tab Collage Organiser",
   "browser_action": {},
+  "icons": {
+    "16": "fromScratchIcon.jpg",
+    "48": "fromScratchIcon.jpg",
+    "128": "fromScratchIcon.jpg"
+  },
   "content_security_policy": "script-src 'self' 'sha256-x7jNxFJ1cJv22HSRIeLLcnV0oYmE7Yk9IVc3wR6LeJ8='; object-src 'self'",
   "background": {
     "scripts": [

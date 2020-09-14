@@ -100,6 +100,7 @@ class Tab extends React.Component {
 		const isEditing = tab.isEditing;
 		const isCurrTab = tab.id === this.props.view.currTabId;
 		const showOptions = isCurrTab || this.props.tabWidth > 70
+		const icon = this.props.domainIconUrl[tab.content];
 		return (
 			<div
 				ref={el => { this.tabRef = el }}
@@ -143,8 +144,8 @@ class Tab extends React.Component {
 						</div>
 						:
 						<div className="tab-content">
-							{tab.icon &&
-								<img src={tab.icon} width="25" height="auto" style={{ marginRight: '5px' }} />
+							{icon &&
+								<img src={icon} width="25" height="auto" style={{ marginRight: '5px' }} />
 							}
 							{tab.content}
 						</div>
@@ -193,11 +194,11 @@ Tab.propTypes = {
 }
 
 export default connect(
-	null,
+	state => ({ domainIconUrl: state.view.domainIconUrl }),
 	{
 		changeTab,
-		closeTab,
-		setTabEdit,
-		setTabContent
+			closeTab,
+			setTabEdit,
+			setTabContent
 	}
 )(Tab);

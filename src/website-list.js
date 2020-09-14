@@ -147,12 +147,15 @@ class WebsiteList extends React.Component {
 									className={clsx("img-item", this.state.currSite === site.id && "img-item-focused")}
 									ref={el => { this.imgRefs[site.id] = el }}
 								>
-									{/* {img ? */}
-									<img key={site.id} src={img} style={{ ...this.calcImgSize() }} />
-									{/* : */}
-									{/* } */}
+									<img
+										key={site.id}
+										src={img}
+										alt={site.title}
+										style={{ ...this.calcImgSize() }}
+									/>
 									<img
 										src={site.favIconUrl}
+										alt={site.favIconUrl}
 										className="list-img-icon"
 									/>
 								</div>
@@ -192,6 +195,7 @@ class WebsiteList extends React.Component {
 											<img
 												className="list-icon"
 												src={site.favIconUrl}
+												alt={site.favIconUrl}
 												width={20}
 												height={20}
 											/>

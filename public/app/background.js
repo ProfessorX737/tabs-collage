@@ -2,6 +2,7 @@ let tabImgs = {};
 let lastTabStatus = {};
 let initializing = false;
 const storageKey = "tabscollage_view";
+const extensionUrl = chrome.extension.getURL('index.html');
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	captureVisibleTab();
@@ -75,8 +76,12 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
 const sendData = () => {
 	chrome.tabs.query({}, tabs => {
 		let cleantabImgs = {};
+		let filteredTabs = [];
 		for (let i = 0; i < tabs.length; i++) {
 			const tab = tabs[i];
+			// we don't want the extension itself in the list of tabs
+			if(tab.url === extensionUrl) continue;
+			filteredTabs.push(tab);
 			if (tabImgs[tab.id]) {
 				cleantabImgs[tab.id] = tabImgs[tab.id];
 			}
@@ -84,7 +89,7 @@ const sendData = () => {
 		chrome.runtime.sendMessage({
 			type: 'data',
 			data: {
-				tabs,
+				tabs: filteredTabs,
 				tabImgs: cleantabImgs
 			}
 		})
@@ -92,7 +97,6 @@ const sendData = () => {
 }
 
 function openExtension(callback = tab => { }) {
-	const extensionUrl = chrome.extension.getURL('index.html');
 	chrome.tabs.query({}, tabs => {
 		for (let i = 0; i < tabs.length; i++) {
 			const tab = tabs[i];
@@ -118,10 +122,10 @@ function initCapture(tabIds) {
 	}
 	let popupWindowId = null;
 	chrome.windows.getCurrent(window => {
-		const width = Math.max(window.width * 0.2, 500);
-		const height = Math.max(window.height * 0.2, 200);
-		const top = window.top + window.height / 2 - height / 2;
-		const left = window.left + window.width / 2 - width / 2;
+		const width = Math.round(Math.max(window.width * 0.2, 500));
+		const height = Math.round(Math.max(window.height * 0.2, 200));
+		const top = Math.round(window.top + window.height / 2 - height / 2);
+		const left = Math.round(window.left + window.width / 2 - width / 2);
 		const popupUrl = chrome.extension.getURL('popup.html');
 		chrome.windows.create({
 			url: popupUrl,
@@ -182,7 +186,12 @@ function openAllWindows(callback) {
 				callback(minWindows);
 				return;
 			} else {
-				chrome.windows.update(minWindows[i].id, { state: "maximized" }, () => {
+				chrome.windows.update(minWindows[i].id, { 
+					state: "normal",
+					width: 1280,
+					height: 720,
+					focused: false
+				}, () => {
 					openWindow(i + 1);
 				})
 			}
