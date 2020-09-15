@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "description": "Tab Collage Organiser",
   "browser_action": {
-    "default_icon": "letter-t-icon.png"
+    "default_icon": "letter-t-icon128.png"
   },
   "icons": {
     "16":  "letter-t-icon128.png",

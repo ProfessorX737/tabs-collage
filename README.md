@@ -5,16 +5,18 @@ updated collage view of site screenshots for all your tabs.
 ### Inspiration
 If you are like me you most likely have up to 100 or more tabs open in chrome especially if you are doing research or am a programmer learning how to code. These tabs may be in different windows and managing your tabs let alone finding them is always a nightmare. I came up with the idea to solve this problem when I heard CSESoc UNSW was hosting personal projects competition.
 
-### Demo
-See youtube video:
-
-Download from the chrome extension store:
-
-
 ### Tech Stack
 - React for front-end
 - Redux for front-end state management
 - Chrome extension API
+
+### Demo
+See youtube video:
+https://youtu.be/sdWoIomQC5I
+
+Download from the chrome extension store:
+Status: submitted for review, may take a few days or more.
+For now you follow the steps below to use this extension.
 
 ### How to run as a Chrome Extension in developer mode
 1. Install yarn and nodejs

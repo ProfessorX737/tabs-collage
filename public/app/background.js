@@ -81,13 +81,12 @@ const sendData = () => {
 		for (let i = 0; i < tabs.length; i++) {
 			const tab = tabs[i];
 			// we don't want the extension itself in the list of tabs
-			if(tab.url === extensionUrl) continue;
+			if (tab.url === extensionUrl) continue;
 			filteredTabs.push(tab);
 			if (tabImgs[tab.id]) {
 				cleantabImgs[tab.id] = tabImgs[tab.id];
 			}
 		}
-		newImageCount = 0;
 		chrome.runtime.sendMessage({
 			type: 'data',
 			data: {
@@ -150,16 +149,21 @@ function initCapture(tabIds) {
 				if (popupWindowId) chrome.windows.remove(popupWindowId);
 			} else {
 				chrome.tabs.update(tabIds[i], { active: true }, tab => {
-					chrome.tabs.captureVisibleTab(tab.windowId, dataUrl => {
-						if (chrome.runtime.lastError) {
-							console.log('error capturing image ' + tab.title)
-							console.log(chrome.runtime.lastError.message);
-						} else {
-							tabImgs[tab.id] = dataUrl;
-						}
+					if (chrome.runtime.lastError) {
 						sendProgress(i + 1, tabIds.length);
 						openTab(i + 1);
-					})
+					} else {
+						chrome.tabs.captureVisibleTab(tab.windowId, dataUrl => {
+							if (chrome.runtime.lastError) {
+								console.log('error capturing image ' + tab.title)
+								console.log(chrome.runtime.lastError.message);
+							} else {
+								tabImgs[tab.id] = dataUrl;
+							}
+							sendProgress(i + 1, tabIds.length);
+							openTab(i + 1);
+						})
+					}
 				});
 			}
 		}
@@ -189,7 +193,7 @@ function openAllWindows(callback) {
 				callback(minWindows);
 				return;
 			} else {
-				chrome.windows.update(minWindows[i].id, { 
+				chrome.windows.update(minWindows[i].id, {
 					state: "normal",
 					width: 1280,
 					height: 720,
