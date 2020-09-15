@@ -42,18 +42,22 @@ export default class DomainViewer extends React.PureComponent {
       const left = this.firstView.offsetLeft;
       const wantWidth = evt.clientX - left;
       const minWidth = 100;
-      const newWidth = Math.max(minWidth, wantWidth) + "px ";
-      this.firstView.style.minWidth = newWidth;
-      this.firstView.style.width = newWidth;
+      const newWidth = Math.max(minWidth, wantWidth);
+      const parentWidth = this.myRef.offsetWidth;
+      const newWidthPercent = Math.round(newWidth/parentWidth*100)+"%";
+      this.firstView.style.minWidth = newWidthPercent;
+      this.firstView.style.width = newWidthPercent;
       this.firstView.style.flexGrow = 0;
       this.secondView.style.width = 'auto';
     } else {
       const top = this.firstView.offsetTop;
-      const wantWidth = evt.clientY - top;
-      const minWidth = 100;
-      const newWidth = Math.max(minWidth, wantWidth) + "px";
-      this.firstView.style.minHeight = newWidth;
-      this.firstView.style.height = newWidth;
+      const wantHeight = evt.clientY - top;
+      const minHeight = 100;
+      const newHeight = Math.max(minHeight, wantHeight);
+      const parentHeight = this.myRef.offsetHeight;
+      const newHeightPercent = Math.round(newHeight/parentHeight*100)+"%";
+      this.firstView.style.minHeight = newHeightPercent;
+      this.firstView.style.height = newHeightPercent;
       this.firstView.style.flexGrow = 0;
       this.secondView.style.height = 'auto';
     }

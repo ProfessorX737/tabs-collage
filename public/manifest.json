@@ -1,5 +1,5 @@
 {
-  "name": "Tab Collage Organiser",
+  "name": "Tabs Collage",
   "version": "1.0.0",
   "manifest_version": 2,
   "description": "Tab Collage Organiser",
@@ -7,10 +7,10 @@
     "default_icon": "letter-t-icon.png"
   },
   "icons": {
-    "16":  "letter-t-icon.png",
-    "32":  "letter-t-icon.png",
-    "48":  "letter-t-icon.png",
-    "128": "letter-t-icon.png"
+    "16":  "letter-t-icon128.png",
+    "32":  "letter-t-icon128.png",
+    "48":  "letter-t-icon128.png",
+    "128": "letter-t-icon128.png"
   },
   "content_security_policy": "script-src 'self' 'sha256-x7jNxFJ1cJv22HSRIeLLcnV0oYmE7Yk9IVc3wR6LeJ8='; object-src 'self'",
   "background": {
