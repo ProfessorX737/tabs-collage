@@ -189,15 +189,17 @@ export default function (state = initialState, action) {
       let domainIconUrl = {};
       let chromeTabMap = {};
       for (let i = 0; i < tabs.length; i++) {
-        chromeTabMap[tabs[i].id] = tabs[i];
-        const domain = getDomainFromUrl(tabs[i].url);
+        const tab = tabs[i];
+        const url = tab.url ? tab.url : tab.pendingUrl;
+        chromeTabMap[tab.id] = tab;
+        const domain = getDomainFromUrl(url);
         if (domains[domain]) {
-          domains[domain].push(tabs[i]);
+          domains[domain].push(tab);
         } else {
-          domains[domain] = [tabs[i]];
+          domains[domain] = [tab];
         }
         // use the given favIconUrl for domain if it exists
-        const icon = tabs[i].favIconUrl;
+        const icon = tab.favIconUrl;
         if(icon) domainIconUrl[domain] = icon;
       }
       let domainSet = new Set(Object.keys(domains));

@@ -136,3 +136,17 @@
 .disabled {
   pointer-events: none;
 }
+
+.grid-audible-icon {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.637);
+  background-color:#1313138e;
+  margin: 1em;
+}

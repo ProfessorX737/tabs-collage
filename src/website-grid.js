@@ -3,12 +3,11 @@ import './website-grid.css';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withResizeDetector } from 'react-resize-detector';
-import CloseRounded from "@material-ui/icons/CloseRounded";
+import { CloseRounded, VolumeUp } from "@material-ui/icons";
 import * as chrome from './chrome-api';
 import * as constants from './constants';
 import clsx from 'clsx';
 import assert from 'assert';
-
 
 class WebsiteGrid extends React.Component {
   constructor(props) {
@@ -23,7 +22,7 @@ class WebsiteGrid extends React.Component {
     try {
       assert.notDeepStrictEqual(prevProps.websites, this.props.websites);
       this.averageImgRatios();
-    } catch(e) {}
+    } catch (e) { }
   }
 
   // load all images by themselves to find the height/width ratio
@@ -31,11 +30,11 @@ class WebsiteGrid extends React.Component {
   averageImgRatios = () => {
     let numLoading = this.props.websites.length;
     let imgRatios = [];
-    const onload = (img) => { 
-      imgRatios.push(img.height/img.width);
+    const onload = (img) => {
+      imgRatios.push(img.height / img.width);
       --numLoading === 0 && this.onAllImagesLoaded(imgRatios);
     }
-    for(let i = 0; i < this.props.websites.length; i++) {
+    for (let i = 0; i < this.props.websites.length; i++) {
       const siteId = this.props.websites[i].id;
       const src = this.props.tabImgs[siteId] || constants.PLACEHOLDER_IMAGE;
       const img = new Image();
@@ -46,7 +45,7 @@ class WebsiteGrid extends React.Component {
 
   onAllImagesLoaded = imgRatios => {
     let imgRatioSum = 0;
-    for(let i = 0; i < imgRatios.length; i++) {
+    for (let i = 0; i < imgRatios.length; i++) {
       imgRatioSum += imgRatios[i];
     }
     const avgImgRatio = imgRatioSum / imgRatios.length;
@@ -112,7 +111,7 @@ class WebsiteGrid extends React.Component {
                 />
                 <img
                   src={site.favIconUrl}
-                  alt={site.favIconUrl}
+                  alt=''
                   className="grid-item-icon"
                 />
                 <div className="grid-item-title">
@@ -127,6 +126,11 @@ class WebsiteGrid extends React.Component {
                 >
                   <CloseRounded />
                 </div>
+                {site.audible &&
+                  <div className="grid-audible-icon">
+                    <VolumeUp />
+                  </div>
+                }
               </div>
             )
           })}

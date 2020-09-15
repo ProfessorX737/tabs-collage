@@ -7,13 +7,15 @@ export const getTabSites = ({ view, tab }) => {
     const tabs = view.tabs;
     const websiteSet = new Set();
     for (let i = 0; i < tabs.length; i++) {
-      if(tabs[i].content === "all") continue;
-      getDomainOrRegexSites(sites, tabs[i]).forEach(site => {
+      if (tabs[i].content === "all") continue;
+      const dupSites = getDomainOrRegexSites(sites, tabs[i]);
+      for (let j = 0; j < dupSites.length; j++) {
+        const site = dupSites[j];
         if (!websiteSet.has(site)) {
           websiteSet.add(site);
           websites.push(site);
         }
-      })
+      }
     }
   } else {
     websites = getDomainOrRegexSites(sites, tab);
@@ -23,7 +25,7 @@ export const getTabSites = ({ view, tab }) => {
 
 const getDomainOrRegexSites = (sites, tab) => {
   let results = [];
-  if(tab.regex) {
+  if (tab.regex) {
     results = grepSites(sites, tab.content);
   } else {
     // if tab content is not regex then it has to be a domain name
@@ -47,8 +49,4 @@ export function grepSites(sites, search) {
 
 export const getDomainFromUrl = url => {
   return url.match(/^(?:https?:\/\/)?(?:[^@/\n]+@)?(?:www\.)?([^:/?\n]+)/)[1];
-}
-
-const getDomainRegex = domain => {
-  return /^(?:https?:\/\/)?(?:[^@/\n]+@)?(?:www\.)?/ + domain;
 }

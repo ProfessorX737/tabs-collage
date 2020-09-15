@@ -10,8 +10,8 @@ import {
   VerticalSplit,
   HorizontalSplit,
   CancelPresentation,
-  Delete,
-  MoreVert
+  MoreVert,
+  InfoOutlined
 } from "@material-ui/icons";
 import {
   splitView,
@@ -84,6 +84,15 @@ class ViewOptions extends React.Component {
           getContentAnchorEl={null}
           open={Boolean(this.state.menuAnchor)}
         >
+          <a
+            style={{ color: 'black' }}
+            href="https://github.com/ProfessorX737/tabs-extension"
+            target="_blank"
+          >
+            <MenuItem>
+              <InfoOutlined />
+            </MenuItem>
+          </a>
           <MenuItem onClick={() => { this.onSplitView("row") }} >
             <VerticalSplit />
           </MenuItem>

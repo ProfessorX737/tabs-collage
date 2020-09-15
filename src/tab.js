@@ -145,7 +145,13 @@ class Tab extends React.Component {
 						:
 						<div className="tab-content">
 							{icon &&
-								<img src={icon} width="25" height="auto" style={{ marginRight: '5px' }} />
+								<img
+									src={icon}
+									width="25"
+									height="auto"
+									style={{ marginRight: '5px' }}
+									alt=''
+								/>
 							}
 							{tab.content}
 						</div>
@@ -197,8 +203,8 @@ export default connect(
 	state => ({ domainIconUrl: state.view.domainIconUrl }),
 	{
 		changeTab,
-			closeTab,
-			setTabEdit,
-			setTabContent
+		closeTab,
+		setTabEdit,
+		setTabContent
 	}
 )(Tab);

@@ -3,6 +3,7 @@ let lastTabStatus = {};
 let initializing = false;
 const storageKey = "tabscollage_view";
 const extensionUrl = chrome.extension.getURL('index.html');
+let newImageCount = 0;
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	captureVisibleTab();
@@ -86,6 +87,7 @@ const sendData = () => {
 				cleantabImgs[tab.id] = tabImgs[tab.id];
 			}
 		}
+		newImageCount = 0;
 		chrome.runtime.sendMessage({
 			type: 'data',
 			data: {
@@ -150,12 +152,13 @@ function initCapture(tabIds) {
 				chrome.tabs.update(tabIds[i], { active: true }, tab => {
 					chrome.tabs.captureVisibleTab(tab.windowId, dataUrl => {
 						if (chrome.runtime.lastError) {
+							console.log('error capturing image ' + tab.title)
 							console.log(chrome.runtime.lastError.message);
 						} else {
 							tabImgs[tab.id] = dataUrl;
-							sendProgress(i + 1, tabIds.length);
-							openTab(i + 1);
 						}
+						sendProgress(i + 1, tabIds.length);
+						openTab(i + 1);
 					})
 				});
 			}
