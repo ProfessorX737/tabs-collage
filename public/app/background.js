@@ -103,10 +103,13 @@ function openExtension(callback = tab => { }) {
 			const tab = tabs[i];
 			const url = tab.url ? tab.url : tab.pendingUrl;
 			if (url === extensionUrl) {
-				if (!tab.active) {
-					chrome.tabs.update(tab.id, { active: true });
-				}
-				callback(tab);
+				chrome.windows.update(tab.windowId, { focused: true
+				}, () => {
+					if (!tab.active) {
+						chrome.tabs.update(tab.id, { active: true });
+					}
+					callback(tab);
+				})
 				return;
 			}
 		}
