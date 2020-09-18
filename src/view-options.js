@@ -17,6 +17,7 @@ import {
   splitView,
   deleteView
 } from "./redux/actions";
+import { TABS_COLLAGE_INFO_URL } from './constants'
 
 const Hmenu = withStyles({
   paper: {
@@ -86,7 +87,7 @@ class ViewOptions extends React.Component {
         >
           <a
             style={{ color: 'black' }}
-            href="https://github.com/ProfessorX737/tabs-extension"
+            href={TABS_COLLAGE_INFO_URL}
             target="_blank"
           >
             <MenuItem>

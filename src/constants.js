@@ -6,3 +6,5 @@ export const VIEW_MODE = {
 }
 
 export const PLACEHOLDER_IMAGE = "https://i.imgur.com/vO4qrEr.jpg";
+
+export const TABS_COLLAGE_INFO_URL = "https://professorx737.github.io/tabs-collage-info";

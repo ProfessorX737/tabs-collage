@@ -11,14 +11,14 @@ If you are like me you most likely have up to 100 or more tabs open in chrome es
 - Chrome extension API
 
 ### Demo
-Check out this [Tabs Collage Info Website](https://professorx737.github.io/tabs-collage-info):
+Check out this [Tabs Collage Info Website](https://professorx737.github.io/tabs-collage-info)
 
 Download from the chrome extension store:
 Status: submitted for review, may take a few days or more.
 For now you can follow the steps below to use this extension.
 
 ### Run from the pre-built folder
-Follow the instructions at the downloads page at the [Tabs Collage Info Website](https://professorx737.github.io/tabs-collage-info/#/download)
+Follow the instructions at the Tabs Collage Info Website [downloads page](https://professorx737.github.io/tabs-collage-info/#/download)
 
 ### How to run as a Chrome Extension in developer mode
 1. Install yarn and nodejs

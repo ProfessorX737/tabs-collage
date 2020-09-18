@@ -44,12 +44,10 @@ export function setTabActive(site) {
   try {
     chrome.windows.get(site.windowId, window => {
       if (!window.focused) {
-        const state = window.state === "minimized" ?
-          "maximized" : window.state;
-        chrome.windows.update(site.windowId, {
+        let updateInfo = {
           focused: true,
-          state
-        }, () => {
+        }
+        chrome.windows.update(site.windowId, updateInfo, () => {
           chrome.tabs.update(site.id, { active: true });
         });
       } else {
