@@ -7,7 +7,9 @@ import Domain from './domain';
 export default class DomainViewer extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.isBarDragging = false;
+    this.state = {
+      isBarDragging: false,
+    };
   }
 
   componentDidMount() {
@@ -28,16 +30,16 @@ export default class DomainViewer extends React.PureComponent {
 
   onMouseDown = evt => {
     if (evt.target === this.resizeBar) {
-      this.isBarDragging = true;
+      this.setState({ isBarDragging: true });
     }
   }
 
   onMouseUp = evt => {
-    this.isBarDragging = false;
+    this.setState({ isBarDragging: false });
   }
 
   onMouseMove = evt => {
-    if (!this.isBarDragging || !this.resizeBar || !this.firstView) return false;
+    if (!this.state.isBarDragging || !this.resizeBar || !this.firstView) return false;
     if (this.props.view.flexFlow === "row") {
       const left = this.firstView.offsetLeft;
       const wantWidth = evt.clientX - left;
@@ -83,6 +85,7 @@ export default class DomainViewer extends React.PureComponent {
         className="domain-viewer"
         style={{
           flexFlow: this.props.view.flexFlow,
+          userSelect: this.state.isBarDragging ? 'none' : 'auto',
         }}
       >
         {this.props.view.children.length > 0 ? (
