@@ -8,13 +8,38 @@ import {
 } from "../../tree-utils"
 import * as types from "../actionTypes"
 
+const defaultViewTree = {
+  id: "1",
+  currTabId: "all",
+  tabs: [{ id: "all", content: "all" }],
+  children: [],
+  viewMode: constants.VIEW_MODE.grid
+}
+
 const initialState = {
   viewTree: {
-    id: "1",
-    currTabId: "all",
-    tabs: [{ id: "all", content: "all" }],
-    children: [],
-    viewMode: constants.VIEW_MODE.grid
+    ...defaultViewTree,
+    flexFlow: constants.VIEW_DIRECTION.row,
+    children: [
+      {
+        ...defaultViewTree,
+        id: "2",
+        flexFlow: constants.VIEW_DIRECTION.column,
+        children: [
+          { ...defaultViewTree, id: "4" },
+          { ...defaultViewTree, id: "5" },
+        ]
+      },
+      {
+        ...defaultViewTree,
+        id: "3",
+        flexFlow: constants.VIEW_DIRECTION.column,
+        children: [
+          { ...defaultViewTree, id: "6" },
+          { ...defaultViewTree, id: "7" },
+        ]
+      },
+    ]
   },
   domains: {},
   domainIconUrl: {},
@@ -87,7 +112,7 @@ export default function (state = initialState, action) {
         children: [
           { ...update(view, {}), id: uuidv1() },
           {
-            ...initialState.viewTree,
+            ...defaultViewTree,
             id: uuidv1()
           }
         ]
@@ -162,17 +187,17 @@ export default function (state = initialState, action) {
       // if first view does not have tab and it is a domain tab 
       // then push it on
       view.tabs.forEach(tab => {
-        if(!ids.has(tab.id) && !tab.regex) newTabs.push(tab);
+        if (!ids.has(tab.id) && !tab.regex) newTabs.push(tab);
       })
       newViewTree = update(newViewTree, getUpdateAtPathOb({
-          treeData: newViewTree,
-          path: firstViewPath,
-          update: {
-            tabs: {
-              $push: newTabs
-            }
+        treeData: newViewTree,
+        path: firstViewPath,
+        update: {
+          tabs: {
+            $push: newTabs
           }
-        })
+        }
+      })
       )
       return update(state, {
         viewTree: {
@@ -200,7 +225,7 @@ export default function (state = initialState, action) {
         }
         // use the given favIconUrl for domain if it exists
         const icon = tab.favIconUrl;
-        if(icon) domainIconUrl[domain] = icon;
+        if (icon) domainIconUrl[domain] = icon;
       }
       let domainSet = new Set(Object.keys(domains));
       let viewTreeCopy = JSON.parse(JSON.stringify(state.viewTree));
@@ -257,7 +282,7 @@ export default function (state = initialState, action) {
           path: viewPath,
           update: {
             tabs: {
-              [tabIndex] : {
+              [tabIndex]: {
                 $merge: {
                   isEditing
                 }
@@ -280,7 +305,7 @@ export default function (state = initialState, action) {
           path: viewPath,
           update: {
             tabs: {
-              [tabIndex] : {
+              [tabIndex]: {
                 $merge: {
                   content
                 }
